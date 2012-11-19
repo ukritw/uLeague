@@ -1,0 +1,8 @@
+progress.log
+cache/*
+databases/*
+errors/*
+sessions/*
+*.pyc
+*.bak
+

@@ -1,0 +1,23 @@
+# coding: utf8
+
+from datetime import datetime
+
+db.define_table('sports',
+    Field('sport', ),       
+    )
+
+
+
+db.define_table('info',
+    Field('user', db.auth_user, default=auth.user_id),
+    #Field('first_name', db.auth_user),
+    #Field('last_name', db.auth_user),
+    Field('League', db.sports),
+    Field('posting_date', 'datetime', default=datetime.utcnow()),
+    Field('position', 'string', length=32),
+    Field('zipcode', 'integer', length=5),
+    Field('description', 'text'),
+    )
+    
+db.info.user.writable = db.info.user.readable = False
+db.info.posting_date.writable = db.info.posting_date.readable = False

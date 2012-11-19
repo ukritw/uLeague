@@ -1,0 +1,16 @@
+{{extend 'layout.html'}}
+<h1>Home</h1>
+Current Events
+
+<ul>
+{{for event in event:}}
+    <li>{{=event.name}}  --- At: {{=event.location}}  On: {{=event.date_time}}
+    </li>
+{{pass}}
+<br>
+<br>
+
+
+{{= A('Create New Event', _href=URL('create')) }}
+<br>
+{{= A('View your profile', _href=URL('userinfo',args=user.username)) }}

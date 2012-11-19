@@ -1,0 +1,13 @@
+{{extend 'layout.html'}}
+<h1>Profile</h1><br>
+<img src="{{=URL('download',args=user.profile_pic)}}" /><br>
+User Name: {{=user.username}}<br>
+Name: {{=user.first_name}} {{=user.last_name}}<br>
+Gender: {{=user.gender}}<br>
+Date Of Birth: {{=user.dob}}<br>
+Phone Number: {{=user.phone_number}}<br>
+{{if user.username == auth.user.username:}}
+<a href="{{=URL('user/profile',vars=dict(_next=request.env.path_info))}}">Edit Profile</a><br>
+{{pass}}
+<a href="{{=URL('home')}}">Home</a>
+<a href="{{=URL('create')}}">Create Event</a>
