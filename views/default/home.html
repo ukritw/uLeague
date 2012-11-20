@@ -4,9 +4,11 @@ Current Events
 
 <ul>
 {{for event in event:}}
-    <li>{{=event.name}}  --- At: {{=event.location}}  On: {{=event.date_time}}
-    </li>
+    
+    {{=LI(A(event.name, _href=URL('event', args=event.id)))}}
+    
 {{pass}}
+</ul>
 <br>
 <br>
 
@@ -14,3 +16,7 @@ Current Events
 {{= A('Create New Event', _href=URL('create')) }}
 <br>
 {{= A('View your profile', _href=URL('userinfo',args=user.username)) }}
+<br>
+
+<h3> Search for events </h3>
+{{=search_form}}<br/>{{=target_div}}

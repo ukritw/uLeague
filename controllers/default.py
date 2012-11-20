@@ -13,22 +13,41 @@
 def index():
     text = "index"
     return dict(text=text)
-
+    
 @auth.requires_login() 
 def home():
-    event = db().select(db.event.ALL)
-    text = "index"
-    return dict(event=event, text=text, user=auth.user,)
+    event = db(db.event).select(db.event.ALL)
+    search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
+    return dict(event=event, user=auth.user, search_form=search_form, target_div=DIV(_id='target'))
 
 @auth.requires_login() 
 def create():
     form = SQLFORM(db.event)
+    if form.process().accepted:
+       response.flash = 'form accepted'
+       redirect(URL('home'))
+    elif form.errors:
+       response.flash = 'form has errors'
+    else:
+       response.flash = 'please fill out the form'
     return dict(form=form)
-    
+
+def event():
+     this_event = db.event(request.args(0,cast=int)) or redirect(URL('home'))
+     return dict(event=this_event)
+
 def userinfo():
      user = db.auth_user(username=request.args(0)) or redirect(URL('error'))
      return dict(user=user)
-    
+     
+def callback():
+     "an ajax callback that returns a <ul> of links to wiki pages"
+     query = db.event.name.contains(request.vars.keyword)
+     events = db(query).select(orderby=db.event.name)
+     links = [A(e.name, _href=URL('event',args=e.id)) for e in events]
+     return UL(*links)
+     
+     
 def user():
     """
     exposes:

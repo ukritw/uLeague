@@ -51,7 +51,7 @@ db.define_table('event',
     )
 
 db.event.sport.requires = IS_IN_SET((sports),zero=T('choose one'))
-db.event.date_time.requires = IS_DATE_IN_RANGE(format=T('%Y-%m-%d'), minimum=datetime.date.today(), maximum=datetime.date.today()+datetime.timedelta(days=365), error_message='Must be a date between now and a year')
+#db.event.date_time.requires = IS_DATE_IN_RANGE(format=T('%Y-%m-%d'), minimum=datetime.date.today(), maximum=datetime.date.today()+datetime.timedelta(days=365), error_message='Must be a date between now and a year')
 #db.event.guest_list.requires = IS_IN_DB(db, 'person.user.first_name', '%(name)s', zero=T('choose one'))
     
 #------------------------------------------------------------------------------------------------------------------------------------
