@@ -8,12 +8,13 @@
 ## - download is for downloading files uploaded in the db (does streaming)
 ## - call exposes all registered services (none by default)
 #########################################################################
-
+from gluon.contrib.populate import populate
+#populate(db.event,20)
 
 def index():
     text = "index"
     return dict(text=text)
-    
+   
 @auth.requires_login() 
 def home():
     event = db(db.event).select(db.event.ALL)
@@ -32,10 +33,35 @@ def create():
        response.flash = 'please fill out the form'
     return dict(form=form)
 
+@auth.requires_login() 
 def event():
      this_event = db.event(request.args(0,cast=int)) or redirect(URL('home'))
-     return dict(event=this_event)
+     event_id = db.event(request.args(0,cast=int)).id
+     delete_button = " "
+     #if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id):
+     delete_button =  A('Delete', _href=URL('delete', args=[event_id]))
+         
+     #participants = db((db.participation.event==event_id) & (db.participation.person==auth.user_id)).select(db.participation.ALL)
+     participants = db(db.participation.event == event_id).select(db.participation.ALL)
+          
+     string = db.event(request.args(0,cast=int)).host.id
+     stringb = auth.user_id
+     return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants)
 
+def delete():
+    db(db.event.id == request.args[0]).delete()
+    db.commit()
+    session.flash = T('The event has been deleted')
+    redirect(URL('home'))
+    return ()
+
+def join():
+    db.participation.insert(person=request.args[1],status='Accepted',event=request.args[0])
+    db.commit()
+    session.flash = T('You have joined the event ' + db.event(request.args(0,cast=int)).name)
+    redirect(URL('event',args=request.args[0]))
+    return ()
+    
 def userinfo():
      user = db.auth_user(username=request.args(0)) or redirect(URL('error'))
      return dict(user=user)

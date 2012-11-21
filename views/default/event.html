@@ -1,4 +1,5 @@
 {{extend 'layout.html'}}
+<div style=" border-style:solid; border-width:1px;">
 <h3> Event Name: {{=event.name}}</h3>
 <h3> Sport: {{=event.sport}}</h3>
 <h3> Date and Time: {{=event.date_time}}</h3>
@@ -6,3 +7,27 @@
 <h3> Description: {{=event.description}}</h3>
 <h3> Posted on: {{=event.posting_date}}</h3>
 <h3> Host: {{=event.host.first_name + " " + event.host.last_name}}</h3>
+
+<h3> Event ID: {{=event.id}}</h3>
+</div>
+
+{{if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id): }}
+	{{=A('Delete with A', _href=URL('delete', args=[event.id]))}} <br/>
+	{{= "EDIT EVENT" }}
+	
+{{else: }}
+	{{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+{{pass}}
+{{=string}}
+{{=stringb}}
+
+{{#=A('Delete with A', _href=URL('delete', args=[event.id]))}} 
+
+<h4> Participation </h4>
+<ul>
+{{for participant in participants:}}
+    {{=participant.person.first_name +' ' + participant.person.last_name }} 
+    {{=participant.status }}
+    <br/>
+{{pass}}
+</ul>

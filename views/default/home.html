@@ -6,7 +6,6 @@ Current Events
 {{for event in event:}}
     
     {{=LI(A(event.name, _href=URL('event', args=event.id)))}}
-    
 {{pass}}
 </ul>
 <br>
@@ -19,4 +18,5 @@ Current Events
 <br>
 
 <h3> Search for events </h3>
-{{=search_form}}<br/>{{=target_div}}
+{{=search_form}}<br/>
+{{=target_div}}
