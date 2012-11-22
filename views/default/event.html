@@ -1,7 +1,7 @@
 {{extend 'layout.html'}}
 <div style=" border-style:solid; border-width:1px;">
 <h3> Event Name: {{=event.name}}</h3>
-<h3> Sport: {{=event.sport}}</h3>
+<h3> Sport: {{=event.sport.sport}}</h3>
 <h3> Date and Time: {{=event.date_time}}</h3>
 <h3> Location: {{=event.location}}</h3>
 <h3> Description: {{=event.description}}</h3>
@@ -12,15 +12,22 @@
 </div>
 
 {{if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id): }}
-	{{=A('Delete with A', _href=URL('delete', args=[event.id]))}} <br/>
-	{{= "EDIT EVENT" }}
+	{{=A('Delete Event', _href=URL('delete', args=[event.id]))}} <br/>
+	{{=A('Edit Event', _href=URL('event_edit', args=[event.id]))}} <br/>
+	
+{{elif user != None: }}
+	{{=P('drop down menu')}}
+{{=form}}
 	
 {{else: }}
+	
 	{{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
 {{pass}}
+
+<h6> info </h6>
 {{=string}}
 {{=stringb}}
-
+{{=user}}
 {{#=A('Delete with A', _href=URL('delete', args=[event.id]))}} 
 
 <h4> Participation </h4>

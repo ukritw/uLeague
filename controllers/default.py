@@ -19,8 +19,57 @@ def index():
 def home():
     event = db(db.event).select(db.event.ALL)
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
-    return dict(event=event, user=auth.user, search_form=search_form, target_div=DIV(_id='target'))
+    form=FORM('Search for sports:', 
+               INPUT(_name='sport'), 
+               INPUT(_type='submit'))
+    if form.accepts(request,session):
+        response.flash = 'form accepted'
+        session.sport = request.vars.sport
+        redirect(URL('search_result'))
+    return dict(event=event, user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form)
 
+def list_states():
+    states = db(db.sports_list.sport.startswith(request.vars.name)).select().as_list()
+    return dict(states=states)
+
+def states_complete():
+    states = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
+    logger.info("The list is: " + str(states))
+    state_list = [s['name'] for s in states]
+    import gluon.contrib.simplejson
+    return gluon.contrib.simplejson.dumps(state_list)
+
+def month_selector():
+    if not request.vars.month:
+        return ''
+    pattern = request.vars.month.capitalize() + '%'
+    selected = [row.sport for row in db(db.sports_list.sport.like(pattern)).select()]
+    return ''.join([DIV(k,
+                 _onclick="jQuery('#month').val('%s')" % k,
+                 _onmouseover="this.style.backgroundColor='yellow'",
+                 _onmouseout="this.style.backgroundColor='white'"
+                 ).xml() for k in selected])
+                     
+def search_result():
+    sports_id = db(db.sports_list.sport == session.sport).select().first()
+    events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time)
+ 
+    #needs to be implement with ajax w/o page refresh and autocomplete
+    form=FORM('Search for sports:', 
+               INPUT(_name='sport'), 
+               INPUT(_type='submit'))
+    if form.accepts(request,session):
+        response.flash = 'form accepted'
+        session.sport = request.vars.sport
+        redirect(URL('search_result'))
+    
+     #need to edit, not working 
+    user = db.participation(person=auth.user_id,event=request.args(0))
+    participation_form = SQLFORM(db.participation,user)
+    if participation_form.process().accepted:
+        response.flash = 'Participation changed'
+    return dict(sports_id=sports_id, events=events, form=form, participation_form=participation_form)
+                     
 @auth.requires_login() 
 def create():
     form = SQLFORM(db.event)
@@ -33,7 +82,7 @@ def create():
        response.flash = 'please fill out the form'
     return dict(form=form)
 
-@auth.requires_login() 
+
 def event():
      this_event = db.event(request.args(0,cast=int)) or redirect(URL('home'))
      event_id = db.event(request.args(0,cast=int)).id
@@ -43,10 +92,15 @@ def event():
          
      #participants = db((db.participation.event==event_id) & (db.participation.person==auth.user_id)).select(db.participation.ALL)
      participants = db(db.participation.event == event_id).select(db.participation.ALL)
-          
+     user = db.participation(person=auth.user_id,event=request.args(0))
+     form = SQLFORM(db.participation,user)
+     if form.process().accepted:
+       response.flash = 'Participation changed'
+       
      string = db.event(request.args(0,cast=int)).host.id
      stringb = auth.user_id
-     return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants)
+     return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants,user=user, form=form)
+
 
 def delete():
     db(db.event.id == request.args[0]).delete()
@@ -55,12 +109,26 @@ def delete():
     redirect(URL('home'))
     return ()
 
+@auth.requires_login() 
 def join():
     db.participation.insert(person=request.args[1],status='Accepted',event=request.args[0])
     db.commit()
     session.flash = T('You have joined the event ' + db.event(request.args(0,cast=int)).name)
     redirect(URL('event',args=request.args[0]))
     return ()
+
+def event_edit():
+
+    event = db.event(request.args(0))
+    form = SQLFORM(db.event,event)
+    if form.process().accepted:
+       response.flash = 'Event updated'
+       redirect(URL('event',args=request.args[0]))
+    elif form.errors:
+       response.flash = 'Form has errors'
+    else:
+       response.flash = 'Please fill out the form'
+    return dict(form=form)
     
 def userinfo():
      user = db.auth_user(username=request.args(0)) or redirect(URL('error'))
@@ -72,7 +140,7 @@ def callback():
      events = db(query).select(orderby=db.event.name)
      links = [A(e.name, _href=URL('event',args=e.id)) for e in events]
      return UL(*links)
-     
+
      
 def user():
     """

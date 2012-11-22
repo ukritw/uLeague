@@ -56,10 +56,10 @@
     (left_sidebar_enabled and 1 or 0)+(right_sidebar_enabled and 1 or 0)]
   }}
 
-  <!-- uncomment here to load jquery-ui
-       <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" type="text/css" media="all" />
-       <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
-       uncomment to load jquery-ui //-->
+  
+       <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/themes/base/jquery-ui.css" type="text/css" media="all" />
+       <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.24/jquery-ui.min.js" type="text/javascript"></script>
+       
   <noscript><link href="{{=URL('static', 'css/web2py_bootstrap_nojs.css')}}" rel="stylesheet" type="text/css" /></noscript>
   {{block head}}{{end}}
 </head>
@@ -88,10 +88,10 @@
           {{pass}}
           
           <ul class="nav">
-              <li> {{=A('Index', _href='index')}} </li>
-              <li> {{=A('Home', _href='home')}} </li>
-              <li> {{=A('Creat Event', _href='create')}} </li>
-              <li> {{=A('User Info', _href='userinfo')}} </li>
+              <li> {{=A('Index', _href=URL('index'))}} </li>
+              <li> {{=A('Home', _href=URL('home'))}} </li>
+              <li> {{=A('Creat Event', _href=URL('create'))}} </li>
+              <li> {{=A('User Info', _href=URL('userinfo',args=auth.user_id))}} </li>
           </ul>   
        
         </div><!--/.nav-collapse -->

@@ -1,10 +1,11 @@
 {{extend 'layout.html'}}
+
+{{=form}}
 <h1>Home</h1>
 Current Events
 
 <ul>
 {{for event in event:}}
-    
     {{=LI(A(event.name, _href=URL('event', args=event.id)))}}
 {{pass}}
 </ul>
@@ -18,5 +19,7 @@ Current Events
 <br>
 
 <h3> Search for events </h3>
+<div class="ui-widget">
 {{=search_form}}<br/>
 {{=target_div}}
+</div>

@@ -1,0 +1,55 @@
+{{extend 'layout.html'}}
+{{=form}}
+<h4>Search result for {{=session.sport}}</h4>
+
+<div style="border-style:solid; border-width:1px; margin-top:10px; float:left; ">
+    <h5>Filter Result </h5>
+    <form name="filter" enctype="multipart/form-data" action="{{=URL('search_result')}}" method="get">
+        <p>Gender</p>
+    		<input type="radio" name="sex" value="Male">Male<br>
+			<input type="radio" name="sex" value="Female">Female<br><hr>
+        <p>Date and Time </p>
+        <hr>
+        <p>Skill level</p>
+        <hr>
+        <p>Location</p>
+        	<input type="text" name="location" >
+        <hr>
+        <p>Name of event</p>
+        	<input type="text" name="event_name" >
+        <br>
+		<input class="btn btn-info" type="submit" />
+	</form>
+</div>
+
+<div style="float:left; margin-left: 40px;">
+{{for event in events:}}
+    {{if (not request.vars.sex or event.host.gender == request.vars.sex) and (not request.vars.location or event.location == request.vars.location) : }}
+    <a href="{{=URL('event', args=event.id)}}">
+        <div style="border-style:solid; border-width:1px; margin-top:10px; ">
+            <ul style="list-style-type:none;">
+                {{=H6(event.name)}}
+                {{=LI(event.date_time)}}
+                {{=LI(event.location)}}
+                {{=LI(event.host.first_name+' '+event.host.last_name)}}
+                {{=LI(event.posting_date)}}
+                {{=LI(event.host.gender)}}
+                {{user = db.participation(person=auth.user_id,event=event.id)}}
+                {{if (event.host.id) == (auth.user_id): }}
+                    {{=A('Delete Event', _href=URL('delete', args=[event.id]))}} <br/>
+                    {{=A('Edit Event', _href=URL('event_edit', args=[event.id]))}} <br/>
+                    
+                {{elif user != None: }}
+                    {{=P('drop down menu')}}
+                	{{=participation_form}}
+                    
+                {{else: }}
+                    
+                    {{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+                {{pass}}
+            </ul>
+      </div>
+    </a>
+    {{pass}}
+{{pass}}
+</div>

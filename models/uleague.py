@@ -25,7 +25,7 @@ db.auth_user.profile_pic.requires = IS_IMAGE(error_message='Invalid file type')
 #------------------------------------------------------------------------------------------------------------------------------------
 #sportskill table stores a person's skill in a sport  
 db.define_table('sportskill',
-    Field('sport', 'string'), # Luca: 'string' may be better
+    Field('sport', 'reference sports_list'), 
     Field('level', 'double'),
     Field('position', 'string', length=64),
     Field('person', 'reference auth_user'),
@@ -33,7 +33,7 @@ db.define_table('sportskill',
 
 sports = ['Basketball','Badminton','Soccer','Tennis']
 # IS_LIST_OF(IS_IN_SET(....)) if you keep it as list:, but advice is not.
-db.sportskill.sport.requires = IS_IN_SET((sports),zero=T('choose one'))
+#db.sportskill.sport.requires = IS_IN_DB(db,db.sports_list.sport,'%(name)s')
 db.sportskill.level.requires = [IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]
 db.sportskill.person.requires = IS_NOT_EMPTY()
 
@@ -41,7 +41,7 @@ db.sportskill.person.requires = IS_NOT_EMPTY()
 #event table stores the information about each sporting event
 db.define_table('event',
     Field('name', 'string', length=128),
-    Field('sport', 'string'),
+    Field('sport', 'reference sports_list'),
     Field('date_time', 'datetime'),
     Field('location', 'string', length=256),
     Field('description', 'text', length=512),
@@ -50,7 +50,7 @@ db.define_table('event',
     Field('guest_list', 'list:reference auth_user'), # necessary?
     )
 
-db.event.sport.requires = IS_IN_SET((sports),zero=T('choose one'))
+db.event.sport.requires = IS_IN_DB(db,'sports_list.id','%(sport)s')
 db.event.date_time.requires = IS_DATE_IN_RANGE(format=T('%Y-%m-%d %H:%M:%S'), minimum=datetime.date.today(), maximum=datetime.date.today()+datetime.timedelta(days=365), error_message='Must be a date between now and a year')
 #db.event.guest_list.requires = IS_IN_DB(db, 'person.user.first_name', '%(name)s', zero=T('choose one'))
     
@@ -65,3 +65,9 @@ db.define_table('participation',
 # Invited, Declided, Accepted, Maybe, Owner
 db.participation.status.requires = IS_IN_SET(('Invited', 'Declided', 'Accepted', 'Maybe', 'Host'),zero=T('choose one'))
 db.participation.event.requires = IS_IN_DB(db, 'event.id', '%(name)s', zero=T('choose an event'))
+
+#------------------------------------------------------------------------------------------------------------------------------------
+#Sports_list table keeps the list of sport
+db.define_table('sports_list',
+    Field('sport', 'string'),
+    )
