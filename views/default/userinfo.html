@@ -7,14 +7,6 @@ Name: {{=user.first_name}} {{=user.last_name}}<br>
 Gender: {{=user.gender}}<br>
 Date Of Birth: {{=user.dob}}<br>
 Phone Number: {{=user.phone_number}}<br>
-
-{{for sportskill in sportskill:}}
-    {{if person == user.username:}}
-    	Sport: {{=sportskill.sport}}<br>
-    	Level: {{=sportskill.level}}<br>
-    	Position: {{=sportskill.position}}<br>
-    {{pass}}
-{{pass}}
 {{if user.username == auth.user.username:}}
 <a href="{{=URL('user/profile',vars=dict(_next=request.env.path_info))}}">Edit Profile</a><br>
 <div id="edit_skills">Edit Skills</div>
