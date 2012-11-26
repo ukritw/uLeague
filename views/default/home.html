@@ -1,12 +1,36 @@
 {{extend 'layout.html'}}
 
 {{=form}}
-<h1>Home</h1>
+<h4>Weekly Calendar</h4>
 Current Events
 
 <ul>
 {{for event in event:}}
-    {{=LI(A(event.name, _href=URL('event', args=event.id)))}}
+    <a href="{{=URL('event', args=event.id)}}">
+        <div style="border-style:solid; border-width:1px; margin-top:10px; ">
+            <ul style="list-style-type:none;">
+                {{=H6(event.name)}}
+                {{=LI(event.date_time)}}
+                {{=LI(event.location)}}
+                {{=LI(event.host.first_name+' '+event.host.last_name)}}
+                {{=LI(event.posting_date)}}
+                {{=LI(event.host.gender)}}
+
+                {{if (event.host.id) == (auth.user_id): }}
+                    {{=A('Delete Event', _href=URL('delete', args=[event.id]))}} <br/>
+                    {{=A('Edit Event', _href=URL('event_edit', args=[event.id]))}} <br/>
+                    
+                {{elif user != None: }}
+                    {{=P('drop down menu')}}
+                    {{#participation_form}}
+                    
+                {{else: }}
+                    
+                    {{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+                {{pass}}
+            </ul>
+      </div>
+    </a>
 {{pass}}
 </ul>
 <br>
