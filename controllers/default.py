@@ -129,10 +129,12 @@ def event_edit():
     else:
        response.flash = 'Please fill out the form'
     return dict(form=form)
-    
+
+@auth.requires_login()
 def userinfo():
-     user = db.auth_user(username=request.args(0)) or redirect(URL('error'))
-     return dict(user=user)
+     user = db.auth_user(username=request.args(0))
+     sportskill = db(db.sportskill.person == user).select(db.sportskill.ALL)
+     return dict(user=user,sportskill=sportskill)
      
 def callback():
      "an ajax callback that returns a <ul> of links to wiki pages"
@@ -140,8 +142,7 @@ def callback():
      events = db(query).select(orderby=db.event.name)
      links = [A(e.name, _href=URL('event',args=e.id)) for e in events]
      return UL(*links)
-
-     
+    
 def user():
     """
     exposes:

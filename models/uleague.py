@@ -34,7 +34,7 @@ db.define_table('sportskill',
 sports = ['Basketball','Badminton','Soccer','Tennis']
 # IS_LIST_OF(IS_IN_SET(....)) if you keep it as list:, but advice is not.
 #db.sportskill.sport.requires = IS_IN_DB(db,db.sports_list.sport,'%(name)s')
-db.sportskill.level.requires = [IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]
+db.sportskill.level.requires = [IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]
 db.sportskill.person.requires = IS_NOT_EMPTY()
 
 #------------------------------------------------------------------------------------------------------------------------------------

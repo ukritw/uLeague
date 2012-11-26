@@ -91,7 +91,7 @@
               <li> {{=A('Index', _href=URL('index'))}} </li>
               <li> {{=A('Home', _href=URL('home'))}} </li>
               <li> {{=A('Creat Event', _href=URL('create'))}} </li>
-              <li> {{=A('User Info', _href=URL('userinfo',args=auth.user_id))}} </li>
+              <li> {{=A('User Info', _href=URL('userinfo',args=auth.user.username))}} </li>
           </ul>   
        
         </div><!--/.nav-collapse -->
