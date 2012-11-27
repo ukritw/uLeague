@@ -1,0 +1,27 @@
+.event_border {
+	border-style:solid;
+	border-width:3px; 
+	border-radius: 10px; 
+	border-color:#eee; 
+}
+
+.marginleft_none {
+	margin-left: 0px;
+}
+
+#eventinfo {
+	padding-top:20px;
+	padding-bottom: 20px;
+}
+.event_image {
+	width: 200px;
+	height: 200px;
+}
+
+hr.event_info {
+	margin-top: 0px;
+}
+
+#participation_form {
+	margin-top:10px;
+}

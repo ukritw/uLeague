@@ -63,7 +63,7 @@ db.define_table('participation',
     )
 
 # Invited, Declided, Accepted, Maybe, Owner
-db.participation.status.requires = IS_IN_SET(('Invited', 'Declided', 'Accepted', 'Maybe', 'Host'),zero=T('choose one'))
+db.participation.status.requires = IS_IN_SET(('Invited', 'Declined', 'Accepted', 'Maybe', 'Host'),zero=T('choose one'))
 db.participation.event.requires = IS_IN_DB(db, 'event.id', '%(name)s', zero=T('choose an event'))
 
 #------------------------------------------------------------------------------------------------------------------------------------

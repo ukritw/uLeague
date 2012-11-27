@@ -44,6 +44,7 @@
   response.files.append(URL('static','css/bootstrap-responsive.min.css'))
   response.files.append(URL('static','css/web2py.css'))
   response.files.append(URL('static','css/web2py_bootstrap.css'))
+  response.files.append(URL('static','css/uleague.css'))
   }}
 
   {{include 'web2py_ajax.html'}}
@@ -91,7 +92,7 @@
               <li> {{=A('Index', _href=URL('index'))}} </li>
               <li> {{=A('Home', _href=URL('home'))}} </li>
               <li> {{=A('Creat Event', _href=URL('create'))}} </li>
-              <li> {{=A('User Info', _href=URL('userinfo',args=auth.user.username))}} </li>
+              <li> {{#=A('User Info', _href=URL('userinfo',args=auth.user.username))}} </li>
           </ul>   
        
         </div><!--/.nav-collapse -->
@@ -102,14 +103,7 @@
   <div class="container">
     <!-- Masthead ================================================== -->
     <header class="mastheader row" id="header">
-        <div class="span12">
-            <div class="page-header">
-                <h1>
-                    {{=response.title or request.application}}
-                    <small>{{=response.subtitle or ''}}</small>
-                </h1>
-            </div>
-        </div>
+        
     </header>
 
     <section id="main" class="main row">
@@ -143,10 +137,10 @@
         <footer class="footer span12" id="footer">
             <div class="footer-content">
                 {{block footer}} <!-- this is default footer -->
-                <div class="copyright pull-left">{{=T('Copyright')}} &#169; {{=request.now.year}}</div>
+                <div class="copyright pull-left">{{=T('uLeague')}} &#169; {{=request.now.year}}</div>
                 <div id="poweredBy" class="pull-right">
                     {{=T('Powered by')}}
-                    <a href="http://www.web2py.com/">web2py</a>
+                    <a href="http://www.web2py.com/">uLeague</a>
                 </div>
                 {{end}}
             </div>

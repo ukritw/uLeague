@@ -110,20 +110,32 @@ def event():
      #participants = db((db.participation.event==event_id) & (db.participation.person==auth.user_id)).select(db.participation.ALL)
      participants = db(db.participation.event == event_id).select(db.participation.ALL)
      user = db.participation(person=auth.user_id,event=request.args(0))
-     form = SQLFORM(db.participation,user)
+     
+     form = FORM('Participation:',
+              SELECT('Accepted','Declined','Maybe',_name="participation"),
+              INPUT(_type='submit'))
+     #form = SQLFORM(db.participation,user)
      if form.process().accepted:
        response.flash = 'Participation changed'
+       redirect(URL('change_participation'))
+     elif form.errors:
+       response.flash = 'form has errors'
+     #else:
+      # response.flash = 'please fill the form'
        
      string = db.event(request.args(0,cast=int)).host.id
      stringb = auth.user_id
      return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants,user=user, form=form)
 
-
+def change_participation():
+    #redirect(URL('home'))
+    return ()
+    
 def delete():
     db(db.event.id == request.args[0]).delete()
     db.commit()
     session.flash = T('The event has been deleted')
-    redirect(URL('home'))
+    redirect(URL('/home'))
     return ()
 
 @auth.requires_login() 
@@ -135,7 +147,6 @@ def join():
     return ()
 
 def event_edit():
-
     event = db.event(request.args(0))
     form = SQLFORM(db.event,event)
     if form.process().accepted:

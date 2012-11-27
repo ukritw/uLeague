@@ -1,40 +1,110 @@
 {{extend 'layout.html'}}
-<div style=" border-style:solid; border-width:1px;">
-<h3> Event Name: {{=event.name}}</h3>
-<h3> Sport: {{=event.sport.sport}}</h3>
-<h3> Date and Time: {{=event.date_time}}</h3>
-<h3> Location: {{=event.location}}</h3>
-<h3> Description: {{=event.description}}</h3>
-<h3> Posted on: {{=event.posting_date}}</h3>
-<h3> Host: {{=event.host.first_name + " " + event.host.last_name}}</h3>
 
-<h3> Event ID: {{=event.id}}</h3>
+
+<div style="" class="span10 offset1 event_border" id="eventinfo">
+
+<div class="span3">
+	<img src="http://placehold.it/140x140" class="img-polaroid event_image">
 </div>
 
-{{if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id): }}
-	{{=A('Delete Event', _href=URL('delete', args=[event.id]))}} <br/>
-	{{=A('Edit Event', _href=URL('event_edit', args=[event.id]))}} <br/>
-	
-{{elif user != None: }}
-	{{=P('drop down menu')}}
-{{=form}}
-	
-{{else: }}
-	
-	{{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
-{{pass}}
+<div class="span6">
+    {{=H4(event.name)}} 
+    {{=event.sport.sport}}
+    <hr class="event_info"> 
+    <div class="span6 marginleft_none">
+        <div class="span3 marginleft_none">
+        {{=H6(event.date_time.date())}} <hr class="event_info">
+        </div>
+        <div class="span3 marginleft_none">
+        {{=H6(event.date_time.time())}} <hr class="event_info">
+        </div> 
+    </div>  
+    <hr class="event_info">
+    {{=H6(event.location)}} <hr class="event_info">
+    {{=H6("Posted by ",event.host.first_name + " " + event.host.last_name, " on ",event.posting_date)}}
+        {{if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id): }}
+        	{{=A(XML('<button class="btn" type="button"> Delete Event </button>'), _href=URL('delete', args=[event.id]))}} 
+        	{{=A(XML('<button class="btn" type="button"> Edit Event </button>'), _href=URL('event_edit', args=[event.id]))}} 
+        {{elif user != None: }}
+            {{#=form}}
+            <form id="participation_form">
+                <select name="participation">
+                    <option value="Accepted">Accepted</option>
+                    <option value="Declined">Declined</option>
+                    <option value="Maybe">Maybe</option>
+                </select>
+                <input type="button" value="submit"
+               onclick="ajax('{{=URL('change_participation')}}',['participation'],'target');"/>
+            </form>
+        {{else: }}
+            {{=A(XML('<button class="btn" type="button"> Join </button>'), _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+            
+        {{pass}}
+    <hr class="event_info">
+</div>
 
-<h6> info </h6>
+
+
+<div class="accordion span8 offset1 " id="accordion2">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+        Description
+      </a>
+    </div>
+    <div id="collapseOne" class="accordion-body collapse in">
+      <div class="accordion-inner">
+      	{{=event.description}}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="accordion span8 offset1 " id="accordion3">
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseTwo">
+        Participants
+      </a>
+    </div>
+    <div id="collapseTwo" class="accordion-body collapse in">
+      <div class="accordion-inner">
+      	<ul>
+        {{for participant in participants:}}
+            {{=participant.person.first_name + ' ' + participant.person.last_name + ' - ' }}
+            {{=participant.status }}
+            <br/>
+        {{pass}}
+        </ul>
+          <h6>Accepted</h6>
+          <hr class="event_info">
+          
+          <h6>Maybe</h6>
+          <hr class="event_info">
+          
+          <h6>Declined</h6>
+          <hr class="event_info">
+          
+          <h6>Invited</h6>
+          <hr class="event_info">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="span8 offset1">
+
+
+
+
+
+<h6> Dev. Info </h6>
 {{=string}}
 {{=stringb}}
 {{=user}}
-{{#=A('Delete with A', _href=URL('delete', args=[event.id]))}} 
 
-<h4> Participation </h4>
-<ul>
-{{for participant in participants:}}
-    {{=participant.person.first_name +' ' + participant.person.last_name }} 
-    {{=participant.status }}
-    <br/>
-{{pass}}
-</ul>
+
+    </div>
+
+</div>
