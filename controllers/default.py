@@ -164,6 +164,57 @@ def userinfo():
      sportskill = db(db.sportskill.person == user).select(db.sportskill.ALL)
      return dict(user=user,sportskill=sportskill)
      
+def edit_skills():
+     user = db.auth_user(username=request.args(0))
+     sportskill = db.sportskill(id=request.args(1))
+     
+     if user.username != auth.user.username:
+         redirect(URL('home'))
+         
+     form=FORM(TABLE(
+                    TR("Sport:",SELECT("Basketball","Badminton","Soccer","Tennis",_type="text",_name='sport',_value=sportskill.sport)),
+                    TR("Level:",INPUT(_type="double",_name='level',_value=sportskill.level,requires=[IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]))),
+                    TR("Position:",INPUT(_type="text",_name='position',_value=sportskill.position,requires=IS_LENGTH(maxsize=64))),
+                    TR("",INPUT(_type="submit",_value="SUBMIT")))
+                    
+     if form.accepts(request,session):
+         response.flash="form accepted"
+         sportskill.update_record(sport=form.vars.sport)
+         sportskill.update_record(level=form.vars.level)
+         sportskill.update_record(position=form.vars.position)
+         redirect(URL('userinfo',args=user.username))
+     elif form.errors:
+         response.flash="form is invalid"
+     else:
+         response.flash="please fill the form"
+     return dict(user=user,sportskill=sportskill,form=form)
+
+def add_skill():
+     user = db.auth_user(username=request.args(0))
+     sportskill = db().select(db.sportskill.ALL)
+     
+     if user.username != auth.user.username:
+         redirect(URL('home'))
+         
+     form=FORM(TABLE(
+                    TR("Sport:",SELECT("Basketball","Badminton","Soccer","Tennis",_name='sport')),
+                    TR("Level:",INPUT(_type="double",_name='level',requires=[IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]))),
+                    TR("Position:",INPUT(_type="text",_name='position',requires=IS_LENGTH(maxsize=64))),
+                    TR("",INPUT(_type="submit",_value="SUBMIT")))
+                    
+     if form.accepts(request,session):
+         response.flash="form accepted"
+         db.sportskill.insert(person=user.id,sport=form.vars.sport,level=form.vars.level,position=form.vars.position)
+         redirect(URL('userinfo',args=user.username))
+         
+     elif form.errors:
+         response.flash="form is invalid"
+         
+     else:
+         response.flash="please fill the form"
+         
+     return dict(user=user,sportskill=sportskill,form=form)
+     
     
 def user():
     """

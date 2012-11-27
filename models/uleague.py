@@ -25,7 +25,7 @@ db.auth_user.profile_pic.requires = IS_IMAGE(error_message='Invalid file type')
 #------------------------------------------------------------------------------------------------------------------------------------
 #sportskill table stores a person's skill in a sport  
 db.define_table('sportskill',
-    Field('sport', 'reference sports_list'), 
+    Field('sport', 'text'), 
     Field('level', 'double'),
     Field('position', 'string', length=64),
     Field('person', 'reference auth_user'),
