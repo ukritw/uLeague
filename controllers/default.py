@@ -19,7 +19,7 @@ def index():
 def home():
     event = db(db.event).select(db.event.ALL)
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
-    form=FORM('Search for sports:', 
+    form=FORM(P('Search by sport:'), 
                INPUT(_name='sport'), 
                INPUT(_type='submit'))
     if form.accepts(request,session):
@@ -29,7 +29,7 @@ def home():
     return dict(event=event, user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form)
 
 def sports_complete():
-    sports = db(db.sports_list.sport.startswith(request.vars.sport)).select(db.sports_list.sport).as_list()
+    sports = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
     logger.info("The list is: " + str(sports))
     sport_list = [s['sport'] for s in sports]
     import gluon.contrib.simplejson
@@ -95,8 +95,7 @@ def create():
        redirect(URL('home'))
     elif form.errors:
        response.flash = 'form has errors'
-    else:
-       response.flash = 'please fill out the form'
+   
     return dict(form=form)
 
 
@@ -170,18 +169,12 @@ def edit_skills():
      
      if user.username != auth.user.username:
          redirect(URL('home'))
-         
-     form=FORM(TABLE(
-                    TR("Sport:",SELECT("Basketball","Badminton","Soccer","Tennis",_type="text",_name='sport',_value=sportskill.sport)),
-                    TR("Level:",INPUT(_type="double",_name='level',_value=sportskill.level,requires=[IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]))),
-                    TR("Position:",INPUT(_type="text",_name='position',_value=sportskill.position,requires=IS_LENGTH(maxsize=64))),
-                    TR("",INPUT(_type="submit",_value="SUBMIT")))
+     
+     sportskill = db.sportskill(request.args(1))
+     form = SQLFORM(db.sportskill,sportskill)
                     
      if form.accepts(request,session):
          response.flash="form accepted"
-         sportskill.update_record(sport=form.vars.sport)
-         sportskill.update_record(level=form.vars.level)
-         sportskill.update_record(position=form.vars.position)
          redirect(URL('userinfo',args=user.username))
      elif form.errors:
          response.flash="form is invalid"
@@ -196,11 +189,7 @@ def add_skill():
      if user.username != auth.user.username:
          redirect(URL('home'))
          
-     form=FORM(TABLE(
-                    TR("Sport:",SELECT("Basketball","Badminton","Soccer","Tennis",_name='sport')),
-                    TR("Level:",INPUT(_type="double",_name='level',requires=[IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]))),
-                    TR("Position:",INPUT(_type="text",_name='position',requires=IS_LENGTH(maxsize=64))),
-                    TR("",INPUT(_type="submit",_value="SUBMIT")))
+     form=SQLFORM(db.sportskill)
                     
      if form.accepts(request,session):
          response.flash="form accepted"

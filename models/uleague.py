@@ -25,17 +25,18 @@ db.auth_user.profile_pic.requires = IS_IMAGE(error_message='Invalid file type')
 #------------------------------------------------------------------------------------------------------------------------------------
 #sportskill table stores a person's skill in a sport  
 db.define_table('sportskill',
-    Field('sport', 'text'), 
+    Field('sport', 'reference sports_list'), 
     Field('level', 'double'),
     Field('position', 'string', length=64),
-    Field('person', 'reference auth_user'),
+    Field('person', 'reference auth_user', default=auth.user_id, readable = False, writable = False),
     )
 
 sports = ['Basketball','Badminton','Soccer','Tennis']
 # IS_LIST_OF(IS_IN_SET(....)) if you keep it as list:, but advice is not.
-#db.sportskill.sport.requires = IS_IN_DB(db,db.sports_list.sport,'%(name)s')
+#db.sportskill.sport.requires = IS_IN_DB(db,db.sports_list,'%(name)s')
+db.sportskill.sport.requires = IS_IN_DB(db, 'sports_list.id', '%(sport)s', zero=T('choose one'))
 db.sportskill.level.requires = [IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]
-db.sportskill.person.requires = IS_NOT_EMPTY()
+db.sportskill.person.requires = IS_IN_DB(db, 'auth_user.id', '%(username)s', zero=T('choose one'))
 
 #------------------------------------------------------------------------------------------------------------------------------------
 #event table stores the information about each sporting event

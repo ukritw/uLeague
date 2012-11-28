@@ -1,28 +1,33 @@
 {{extend 'layout.html'}}
 <body>
-<h1>Profile</h1><br>
+<h3>Profile</h3><br>
 <img id="profile" src="{{=URL('download',args=user.profile_pic)}}" /><br>
 User Name: {{=user.username}}<br>
 Name: {{=user.first_name}} {{=user.last_name}}<br>
 Gender: {{=user.gender}}<br>
 Date Of Birth: {{=user.dob}}<br>
 Phone Number: {{=user.phone_number}}<br>
+<hr>
 {{for sportskill in sportskill:}}
+    <div class="event_border span3">
     {{if user.username == auth.user.username:}}
         {{if sportskill.person == user.id:}}
-            Sport: {{=sportskill.sport}}<br>
+            Sport: {{=sportskill.sport.sport}}<br>
             Level: {{=sportskill.level}}<br>
             Position: {{=sportskill.position}}<br>
     <a href="{{=URL('edit_skills',args=(user.username, sportskill.id))}}">Edit</a><br>
         {{pass}}
     {{else:}}
-        {{if sportskill.person == user.id:}}
-            Sport: {{=sportskill.sport}}<br>
-            Level: {{=sportskill.level}}<br>
-            Position: {{=sportskill.position}}<br>
-        {{pass}}
+            {{if sportskill.person == user.id:}}
+                Sport: {{=sportskill.sport}}<br>
+                Level: {{=sportskill.level}}<br>
+                Position: {{=sportskill.position}}<br>   
+            {{pass}}
     {{pass}}
+    </div>
 {{pass}}
+
+<hr>
 {{if user.username == auth.user.username:}}
 <a href="{{=URL('add_skill',args=(user.username))}}">Add New Sport</a><br>
 <a href="{{=URL('user/profile',vars=dict(_next=request.env.path_info))}}">Edit Profile</a><br>
@@ -31,7 +36,7 @@ Phone Number: {{=user.phone_number}}<br>
 <a href="{{=URL('create')}}">Create Event</a>
 </body>
 <script>
-var max_size = 50;
+var max_size = 200;
 $("img").each(function(i) {
 	if ($(this).height() > $(this).width()) {
 		var h = max_size;

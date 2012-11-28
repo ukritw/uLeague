@@ -3,7 +3,7 @@
 
 <h4>Search result for {{=session.sport}}</h4>
 
-<div style="border-style:solid; border-width:1px; margin-top:10px; float:left; " >
+<div style="border-style:solid; border-width:1px; margin-top:10px; padding: 15px;" class="span4 event_border" >
     <h5>Filter Search Result </h5>
      {{=A('Clear filter', _href=URL('search_result'))}}
     <form name="filter" enctype="multipart/form-data" action="{{=URL('search_result')}}" method="get">
@@ -36,9 +36,10 @@
     {{if (not request.vars.sex or event.host.gender == request.vars.sex) and (not request.vars.location or event.location == request.vars.location) and (not request.vars.event_name or event.name == request.vars.event_name) and (not request.vars.date or event.date_time.date().isoformat() >= request.vars.date): }}
     {{event_count += 1}}
     <a href="{{=URL('event', args=event.id)}}">
-        <div style="border-style:solid; border-width:1px; margin-top:10px; " >
+        <div style="border-style:solid; border-width:1px; margin-top:10px; " class="event_border">
+            {{=H6(event.name)}}
             <ul style="list-style-type:none;"
-                {{=H6(event.name)}}
+                
                 {{=LI(event.date_time)}}
                 {{=LI(event.date_time.date().isoformat())}}
                 {{=LI(event.location)}}
