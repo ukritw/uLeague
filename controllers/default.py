@@ -19,17 +19,10 @@ from array import *
 
 @auth.requires_login() 
 def home():
-    event = db(db.event).select(db.event.ALL)
     user_participations = db((db.participation.person == auth.user_id) & (db.participation.status != 'Declined')).select(db.participation.ALL)
-    #events = db(db.event.id == user_participations['event'='401']).select(db.event.ALL)
-    
     events = array('I', [])
     for user_participation in user_participations:
-     #   events = db(db.event.id == user_participation.event).select(db.event.ALL)
         events.append(user_participation.event)
-    
-    for I in events:
-        test = db(db.event.id == I).select(db.event.ALL)
     
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     form=FORM(P('Search by sport:'), 
@@ -39,7 +32,7 @@ def home():
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result'))
-    return dict(event=event, user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, test=test)
+    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events)
 
 def sports_complete():
     sports = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
@@ -92,8 +85,12 @@ def callback():
 def create():
     form = SQLFORM(db.event)
     if form.process().accepted:
-       response.flash = 'form accepted'
-       redirect(URL('home'))
+       session.event_name = request.vars.name
+       event_id = db(db.event.name == request.vars.name).select().first()
+       db.participation.insert(person = auth.user_id, status = 'Host', event = event_id)
+       db.commit()
+       response.flash = "Event Created"
+       #redirect(URL('home'))
     elif form.errors:
        response.flash = 'form has errors'
    

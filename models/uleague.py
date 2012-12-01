@@ -41,7 +41,7 @@ db.sportskill.person.requires = IS_IN_DB(db, 'auth_user.id', '%(username)s', zer
 #------------------------------------------------------------------------------------------------------------------------------------
 #event table stores the information about each sporting event
 db.define_table('event',
-    Field('name', 'string', length=128),
+    Field('name', 'string', length=128, unique=True),
     Field('sport', 'reference sports_list'),
     Field('date_time', 'datetime'),
     Field('location', 'string', length=256),

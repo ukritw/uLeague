@@ -21,7 +21,7 @@
     </div>  
     <hr class="event_info">
     {{=H6(event.location)}} <hr class="event_info">
-    {{=H6("Posted by ",event.host.first_name + " " + event.host.last_name, " on ",event.posting_date)}}
+    {{=H6("Posted by ",A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])) , " on ",event.posting_date)}}
         {{if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id): }}
         	{{=A(XML('<button class="btn" type="button"> Delete Event </button>'), _href=URL('delete', args=[event.id]))}} 
         	{{=A(XML('<button class="btn" type="button"> Edit Event </button>'), _href=URL('event_edit', args=[event.id]))}} 
@@ -71,22 +71,33 @@
       <div class="accordion-inner">
       	<ul>
         {{for participant in participants:}}
-            {{=participant.person.first_name + ' ' + participant.person.last_name + ' - ' }}
-            {{=participant.status }}
-            <br/>
-        {{pass}}
+        
         </ul>
           <h6>Accepted</h6>
+          	{{if participant.status == 'Accepted':}}
+          		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+          	{{pass}}
           <hr class="event_info">
-          
+          	
           <h6>Maybe</h6>
+          	{{if participant.status == 'Maybe':}}
+          		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+          	{{pass}}
           <hr class="event_info">
           
           <h6>Declined</h6>
+          	{{if participant.status == 'Declined':}}
+          		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+          	{{pass}}
           <hr class="event_info">
           
           <h6>Invited</h6>
+          	{{if participant.status == 'Invited':}}
+          		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+          	{{pass}}
           <hr class="event_info">
+          	
+          {{pass}}
       </div>
     </div>
   </div>

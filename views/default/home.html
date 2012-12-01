@@ -5,14 +5,12 @@
         $( "#sports_search" ).autocomplete({
             source: "sports_complete.json",
             minLength: 1
-        });
-        
+        }); 
     });
 </script>
 
 {{=user_participations}}
-{{=events[0]}}
-{{=test}}
+
 {{=form}}
 
 
@@ -21,8 +19,8 @@
 Current Events
 
 <ul>
-{{for event in event:}}
-    
+{{for I in events:}}
+    {{event = db(db.event.id == I).select().first()}}
     <a href="{{=URL('event', args=event.id)}}">
         <div style="border-style:solid; border-width:1px; margin-top:10px; ">
             <ul style="list-style-type:none;">
