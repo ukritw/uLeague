@@ -14,45 +14,46 @@ from gluon.contrib.populate import populate
 def index():
     text = "index"
     return dict(text=text)
-   
+
+from array import *
+
 @auth.requires_login() 
 def home():
     event = db(db.event).select(db.event.ALL)
+    user_participations = db((db.participation.person == auth.user_id) & (db.participation.status != 'Declined')).select(db.participation.ALL)
+    #events = db(db.event.id == user_participations['event'='401']).select(db.event.ALL)
+    
+    events = array('I', [])
+    for user_participation in user_participations:
+     #   events = db(db.event.id == user_participation.event).select(db.event.ALL)
+        events.append(user_participation.event)
+    
+    for I in events:
+        test = db(db.event.id == I).select(db.event.ALL)
+    
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     form=FORM(P('Search by sport:'), 
-               INPUT(_name='sport'), 
+               INPUT(_id='sports_search'), 
                INPUT(_type='submit'))
     if form.accepts(request,session):
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result'))
-    return dict(event=event, user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form)
+    return dict(event=event, user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, test=test)
 
 def sports_complete():
     sports = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
-    logger.info("The list is: " + str(sports))
     sport_list = [s['sport'] for s in sports]
     import gluon.contrib.simplejson
     return gluon.contrib.simplejson.dumps(sport_list)
 
-def month_selector():
-    if not request.vars.month:
-        return ''
-    pattern = request.vars.month.capitalize() + '%'
-    selected = [row.sport for row in db(db.sports_list.sport.like(pattern)).select()]
-    return ''.join([DIV(k,
-                 _onclick="jQuery('#month').val('%s')" % k,
-                 _onmouseover="this.style.backgroundColor='yellow'",
-                 _onmouseout="this.style.backgroundColor='white'"
-                 ).xml() for k in selected])
-                     
 def search_result():
     sports_id = db(db.sports_list.sport == session.sport).select().first()
     #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time)
      
     #needs to be implement with ajax w/o page refresh and autocomplete
     form=FORM( P('Search for sports:'), 
-               INPUT(_name='sport', _id='sport'), 
+               INPUT(_id='no_table_name', _name='sport'), 
                INPUT(_type='submit'))
     if form.accepts(request,session):
         response.flash = 'form accepted'

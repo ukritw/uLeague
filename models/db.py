@@ -24,6 +24,7 @@ else:
 
 ## by default give a view/generic.extension to all actions from localhost
 ## none otherwise. a pattern can be 'controller/function.extension'
+#response.generic_patterns = ['*.json']
 response.generic_patterns = ['*'] if request.is_local else []
 ## (optional) optimize handling of static files
 # response.optimize_css = 'concat,minify,inline'
