@@ -10,6 +10,21 @@ body {
 .navbar-inner {
   color: #333;
 }
+.marginleft_none {
+  margin-left: 0px;
+}
+.form-header {
+  margin: 0 auto;
+  text-align: center;
+  width: 50%;
+}
+#web2py_user_form {
+  width: 50%;
+  margin: 0 auto;
+}
+#web2py_user_form #auth_user_password_two__row .w2p_fc {
+  display: none;
+}
 #header-image {
   float: left;
 }
@@ -62,12 +77,24 @@ body {
 }
 .event_border {
   border-style: solid;
-  border-width: 3px;
+  border-width: 1px;
   border-radius: 10px;
-  border-color: #eee;
+  border-color: #DDD;
 }
-.marginleft_none {
-  margin-left: 0px;
+.event_filter {
+  margin-top: 10px;
+  padding: 15px;
+  background-color: #CCC;
+  opacity: 0.99;
+}
+.event_filter hr {
+  border-color: #DDD;
+}
+.event_filter #filter-buttons {
+  padding-left: 80px;
+}
+.event_filter #filter-buttons a {
+  margin-right: 15px;
 }
 #eventinfo {
   padding-top: 20px;

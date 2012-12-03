@@ -10,7 +10,8 @@
 #########################################################################
 from gluon.contrib.populate import populate
 #populate(db.event,20)
-
+def teststar():
+    return dict(text="dfgdsfg")
 def index():
     text = "index"
     return dict(text=text)
@@ -90,7 +91,7 @@ def create():
        db.participation.insert(person = auth.user_id, status = 'Host', event = event_id)
        db.commit()
        response.flash = "Event Created"
-       #redirect(URL('home'))
+       redirect(URL('home'))
     elif form.errors:
        response.flash = 'form has errors'
    
