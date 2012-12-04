@@ -21,13 +21,6 @@ from array import *
 @auth.requires_login() 
 def home():
     user_participations = db((db.participation.person == auth.user_id) & (db.participation.status != 'Declined')).select(db.participation.ALL)
-    
-    #pagination
-    if len(request.args): page=int(request.args[0])
-    else: page=0
-    items_per_page=2
-    limitby=(page*items_per_page,(page+1)*items_per_page+1)
-    
     events = array('I', [])
     for user_participation in user_participations:
         events.append(user_participation.event)
@@ -40,7 +33,7 @@ def home():
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result'))
-    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page)
+    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events)
 
 def sports_complete():
     sports = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
@@ -76,9 +69,10 @@ def search_result():
     items_per_page=10
     limitby=(page*items_per_page,(page+1)*items_per_page+1)
     events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
-    #rows=db().select(db.prime.ALL,limitby=limitby) 
+    #rows=db().select(db.prime.ALL,limitby=limitby)
+   
     
-    return dict(sports_id=sports_id, events=events, form=form ,participation_form=participation_form, target_div=DIV(_id='target'), page=page, items_per_page=items_per_page)
+    return dict(sports_id=sports_id, events=events, form=form ,participation_form=participation_form, target_div=DIV(_id='target'),page=page,items_per_page=items_per_page)
 
 def callback():
      "an ajax callback that returns a list of events by name to search_result"
@@ -187,6 +181,8 @@ def edit_skills():
          response.flash="please fill the form"
      return dict(user=user,sportskill=sportskill,form=form)
      
+     
+     
 def delete_skills():
      user = db.auth_user(username=request.args(0))
      sportskill = db.sportskill(id=request.args(1))
@@ -214,12 +210,13 @@ def delete_skills():
 
 def add_skill():
      user = db.auth_user(username=request.args(0))
-     #sportskill = db().select(db.sportskill.ALL)
      
      if user.username != auth.user.username:
          redirect(URL('home'))
          
-     form=SQLFORM(db.sportskill)
+     form=SQLFORM(db.sportskill,
+                    fields = None
+                    )
                     
      if form.accepts(request,session):
          response.flash="form accepted"
