@@ -192,7 +192,7 @@ def add_skill():
                     
      if form.accepts(request,session):
          response.flash="form accepted"
-         db.sportskill.insert(person=user.id,sport=form.vars.sport,level=form.vars.level,position=form.vars.position)
+         #db.sportskill.insert(person=user.id,sport=form.vars.sport,level=form.vars.level,position=form.vars.position)
          redirect(URL('userinfo',args=user.username))
          
      elif form.errors:
