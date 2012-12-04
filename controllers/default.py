@@ -180,10 +180,35 @@ def edit_skills():
      else:
          response.flash="please fill the form"
      return dict(user=user,sportskill=sportskill,form=form)
+     
+def delete_skills():
+     user = db.auth_user(username=request.args(0))
+     sportskill = db.sportskill(id=request.args(1))
+     
+     if user.username != auth.user.username:
+         redirect(URL('home'))
+     
+     sportskill = db.sportskill(request.args(1))
+     
+     form = FORM(TABLE(TR("Sure?",SELECT('Yes','No',_name="sure",requires=IS_IN_SET(['Yes','No']))),
+                    TR("",INPUT(_type="submit",_value="SUBMIT"))))
+                    
+     if form.accepts(request,session):
+         response.flash="form accepted"
+         if form.vars.sure=='Yes':
+             db(db.sportskill.id==request.args(1,cast=int)).delete()
+             redirect(URL('userinfo',args=user.username))
+         if form.vars.sure=='No':
+             redirect(URL('userinfo',args=user.username))
+     elif form.errors:
+         response.flash="form is invalid"
+     else:
+         response.flash="please fill the form"
+     return dict(user=user,sportskill=sportskill,form=form)
 
 def add_skill():
      user = db.auth_user(username=request.args(0))
-     sportskill = db().select(db.sportskill.ALL)
+     #sportskill = db().select(db.sportskill.ALL)
      
      if user.username != auth.user.username:
          redirect(URL('home'))
@@ -201,7 +226,7 @@ def add_skill():
      else:
          response.flash="please fill the form"
          
-     return dict(user=user,sportskill=sportskill,form=form)
+     return dict(user=user,form=form)
      
     
 def user():

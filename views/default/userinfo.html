@@ -15,7 +15,7 @@ Phone Number: {{=user.phone_number}}<br>
             Sport: {{=sportskill.sport.sport}}<br>
             Level: {{=sportskill.level}}<br>
             Position: {{=sportskill.position}}<br>
-    <a href="{{=URL('edit_skills',args=(user.username, sportskill.id))}}">Edit</a><br>
+    <a href="{{=URL('edit_skills',args=(user.username, sportskill.id))}}">Edit</a> <a href="{{=URL('delete_skills',args=(user.username, sportskill.id))}}">Delete</a><br>
         {{pass}}
     {{else:}}
             {{if sportskill.person == user.id:}}
