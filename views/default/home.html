@@ -64,13 +64,3 @@ Current Events
 {{=search_form}}<br/>
 {{=target_div}}
 </div>
-
-<div style="float:left;" class="span8">
-{{if page:}}
-<a href="{{=URL(args=[page-1])}}">previous</a>
-{{pass}}
-
-{{if len(events)>items_per_page:}}
-<a href="{{=URL(args=[page+1])}}">next</a>
-{{pass}}
-</div>

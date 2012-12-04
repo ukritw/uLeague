@@ -21,14 +21,14 @@ from array import *
 @auth.requires_login() 
 def home():
     user_participations = db((db.participation.person == auth.user_id) & (db.participation.status != 'Declined')).select(db.participation.ALL)
-    
     #pagination
     if len(request.args): page=int(request.args[0])
     else: page=0
-    items_per_page=2
+    items_per_page=10
     limitby=(page*items_per_page,(page+1)*items_per_page+1)
-    
+    #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
     events = array('I', [])
+    
     for user_participation in user_participations:
         events.append(user_participation.event)
     
