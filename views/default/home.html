@@ -19,9 +19,9 @@
 Current Events
 
 <ul>
-{{for i, I in enumerate(events):}}
+{{for i, event in enumerate(events):}}
     {{if i==items_per_page: break}}
-    {{event = db(db.event.id == I).select().first()}}
+    {{event = db(db.event.id == event).select().first()}}
     <a href="{{=URL('event', args=event.id)}}">
         <div style="border-style:solid; border-width:1px; margin-top:10px; ">
             <ul style="list-style-type:none;">
@@ -63,4 +63,14 @@ Current Events
 <div class="ui-widget">
 {{=search_form}}<br/>
 {{=target_div}}
+</div>
+
+<div style="float:left;" class="span8">
+{{if page:}}
+<a href="{{=URL(args=[page-1])}}">previous</a>
+{{pass}}
+
+{{if len(events)>items_per_page:}}
+<a href="{{=URL(args=[page+1])}}">next</a>
+{{pass}}
 </div>

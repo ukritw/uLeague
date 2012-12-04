@@ -24,13 +24,15 @@ def home():
     #pagination
     if len(request.args): page=int(request.args[0])
     else: page=0
-    items_per_page=10
+    items_per_page=4
     limitby=(page*items_per_page,(page+1)*items_per_page+1)
     #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
-    events = array('I', [])
-    
-    for user_participation in user_participations:
-        events.append(user_participation.event)
+    #events = array('I', [])
+
+    #for user_participation in user_participations:
+    #    events.append(user_participation.event)
+        
+    events = db(db.event.id == db.participation.event ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
     
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     form=FORM(P('Search by sport:'), 
