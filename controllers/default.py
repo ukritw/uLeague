@@ -10,6 +10,7 @@
 #########################################################################
 from gluon.contrib.populate import populate
 #populate(db.event,20)
+
 def teststar():
     return dict(text="dfgdsfg")
 def index():
@@ -24,7 +25,7 @@ def home():
     #pagination
     if len(request.args): page=int(request.args[0])
     else: page=0
-    items_per_page=4
+    items_per_page=2
     limitby=(page*items_per_page,(page+1)*items_per_page+1)
     #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
     #events = array('I', [])
@@ -32,7 +33,7 @@ def home():
     #for user_participation in user_participations:
     #    events.append(user_participation.event)
         
-    events = db(db.event.id == db.participation.event ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
+    events = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
     
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     form=FORM(P('Search by sport:'), 
@@ -54,9 +55,11 @@ def search_result():
     sports_id = db(db.sports_list.sport == session.sport).select().first()
     #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time)
      
-    #needs to be implement with ajax w/o page refresh and autocomplete
-    form=FORM( P('Search for sports:'), 
-               INPUT(_id='no_table_name', _name='sport'), 
+    # form=FORM( P('Search for sports:'), 
+    #            INPUT(_id='no_table_name', _name='sport'), 
+    #            INPUT(_type='submit'))
+    form=FORM(P('Search by sport:'), 
+               INPUT(_id='sports_search', _name='sport'), 
                INPUT(_type='submit'))
     if form.accepts(request,session):
         response.flash = 'form accepted'
@@ -75,7 +78,7 @@ def search_result():
     #pagination
     if len(request.args): page=int(request.args[0])
     else: page=0
-    items_per_page=10
+    items_per_page=3
     limitby=(page*items_per_page,(page+1)*items_per_page+1)
     events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
     #rows=db().select(db.prime.ALL,limitby=limitby) 
@@ -107,31 +110,37 @@ def create():
 
 
 def event():
-     this_event = db.event(request.args(0,cast=int)) or redirect(URL('home'))
-     event_id = db.event(request.args(0,cast=int)).id
-     delete_button = " "
-     #if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id):
-     delete_button =  A('Delete', _href=URL('delete', args=[event_id]))
-         
-     #participants = db((db.participation.event==event_id) & (db.participation.person==auth.user_id)).select(db.participation.ALL)
-     participants = db(db.participation.event == event_id).select(db.participation.ALL)
-     user = db.participation(person=auth.user_id,event=request.args(0))
+    this_event = db.event(request.args(0,cast=int)) or redirect(URL('home'))
+    event_id = db.event(request.args(0,cast=int)).id
+    delete_button = " "
+    #if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id):
+    delete_button =  A('Delete', _href=URL('delete', args=[event_id]))
      
-     form = FORM('Participation:',
-              SELECT('Accepted','Declined','Maybe',_name="participation"),
-              INPUT(_type='submit'))
-     #form = SQLFORM(db.participation,user)
-     if form.process().accepted:
-       response.flash = 'Participation changed'
-       redirect(URL('change_participation'))
-     elif form.errors:
-       response.flash = 'form has errors'
-     #else:
-      # response.flash = 'please fill the form'
-       
-     string = db.event(request.args(0,cast=int)).host.id
-     stringb = auth.user_id
-     return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants,user=user, form=form)
+    #participants = db((db.participation.event==event_id) & (db.participation.person==auth.user_id)).select(db.participation.ALL)
+    participants = db(db.participation.event == event_id).select(db.participation.ALL)
+    user = db.participation(person=auth.user_id,event=request.args(0))
+    
+    # form = FORM('Participation:',
+    #       SELECT('Accepted','Declined','Maybe',_name="participation"),
+    #       INPUT(_type='submit'))
+    #form = SQLFORM(db.participation,user)
+    form = SQLFORM(db.participation, user)
+    if form.process(session=None, formname='participationform').accepted:
+        response.flash = 'Participation changed'
+        redirect(URL('change_participation'))
+    elif form.errors:
+        response.flash = 'form has errors'
+    #else:
+    # response.flash = 'please fill the form'
+    
+    participation_form = SQLFORM(db.participation,user, fields=['status'])
+    if participation_form.process().accepted:
+        response.flash = 'Participation changed'
+        redirect(URL('event', args=event_id))
+    
+    string = db.event(request.args(0,cast=int)).host.id
+    stringb = auth.user_id
+    return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants,user=user, participation_form=participation_form )
 
 def change_participation():
     #redirect(URL('home'))

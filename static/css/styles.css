@@ -4,7 +4,6 @@ body {
   padding: 0;
 }
 body {
-  background-image: url('/uLeague/static/images/gray_jean.png');
   background-repeat: repeat;
 }
 .navbar-inner {
@@ -12,6 +11,10 @@ body {
 }
 .marginleft_none {
   margin-left: 0px;
+}
+hr {
+  border-color: #777;
+  margin-top: 0px;
 }
 .form-header {
   margin: 0 auto;
@@ -47,6 +50,7 @@ body {
 }
 .features {
   margin-top: -100px;
+  color: #EEE;
 }
 .features img {
   display: block;
@@ -59,7 +63,7 @@ body {
 }
 .features .inner-features p {
   font-size: 15px;
-  color: #444;
+  color: #DDD;
   padding: 0 30px;
 }
 .get-started {
@@ -80,21 +84,31 @@ body {
   border-width: 1px;
   border-radius: 10px;
   border-color: #DDD;
+  margin: 10px 0px;
+}
+.event_border {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  border-color: #DDD;
 }
 .event_filter {
   margin-top: 10px;
   padding: 15px;
-  background-color: #CCC;
+  background-color: #444;
   opacity: 0.99;
 }
 .event_filter hr {
   border-color: #DDD;
 }
 .event_filter #filter-buttons {
-  padding-left: 80px;
+  padding-left: 40px;
 }
 .event_filter #filter-buttons a {
   margin-right: 15px;
+}
+.pagination {
+  margin-top: 15px;
 }
 #eventinfo {
   padding-top: 20px;
@@ -104,9 +118,12 @@ body {
   width: 200px;
   height: 200px;
 }
-hr.event_info {
-  margin-top: 0px;
-}
 #participation_form {
   margin-top: 10px;
+}
+#event-image {
+  margin-left: 30px;
+}
+#event-informations #participation_id__row {
+  display: none;
 }
