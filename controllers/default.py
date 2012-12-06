@@ -37,12 +37,12 @@ def home():
     
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     form=FORM(P('Search by sport:'), 
-               INPUT(_id='sports_search'), 
+               INPUT(_id='sports_search', _name='sport'), 
                INPUT(_type='submit'))
     if form.accepts(request,session):
         response.flash = 'form accepted'
         session.sport = request.vars.sport
-        redirect(URL('search_result'))
+        redirect(URL('search_result', vars=dict(q=form.vars.sport)))
     return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page)
 
 def sports_complete():
@@ -52,7 +52,8 @@ def sports_complete():
     return gluon.contrib.simplejson.dumps(sport_list)
 
 def search_result():
-    sports_id = db(db.sports_list.sport == session.sport).select().first()
+    query_string = request.vars.q or ''
+    sports_id = db(db.sports_list.sport == query_string).select().first()
     #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time)
      
     # form=FORM( P('Search for sports:'), 
@@ -64,7 +65,7 @@ def search_result():
     if form.accepts(request,session):
         response.flash = 'form accepted'
         session.sport = request.vars.sport
-        redirect(URL('search_result'))
+        redirect(URL('search_result', vars=dict(q=form.vars.sport)))
     
     #search by event name
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))

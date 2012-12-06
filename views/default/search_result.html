@@ -17,6 +17,7 @@
     <h5>Filter Search Result </h5>
     <hr>
     <form name="filter" enctype="multipart/form-data" action="{{=URL('search_result')}}" method="get">
+        {{if request.vars.q:}}<input type="hidden" name="q" value="{{=request.vars.q}}">{{pass}}
         <p>Gender</p>
     		<input type="radio" name="sex" value="Male" > Male<br>
 			<input type="radio" name="sex" value="Female" > Female<br><hr>
