@@ -10,20 +10,16 @@ Phone Number: {{=user.phone_number}}<br>
 <hr>
 {{for sportskill in sportskill:}}
     <div class="event_border span3">
-    {{if user.username == auth.user.username:}}
         {{if sportskill.person == user.id:}}
             Sport: {{=sportskill.sport.sport}}<br>
             Level: {{=sportskill.level}}<br>
-            Position: {{=sportskill.position}}<br>
-    <a href="{{=URL('edit_skills',args=(user.username, sportskill.id))}}">Edit</a> <a href="{{=URL('delete_skills',args=(user.username, sportskill.id))}}">Delete</a><br>
-        {{pass}}
-    {{else:}}
-            {{if sportskill.person == user.id:}}
-                Sport: {{=sportskill.sport}}<br>
-                Level: {{=sportskill.level}}<br>
-                Position: {{=sportskill.position}}<br>   
+            {{if sportskill.position:}}
+                Position: {{=sportskill.position}}<br>
+            {{pass}}    
+            {{if user.username == auth.user.username:}}
+                <a href="{{=URL('edit_skills',args=(user.username, sportskill.id))}}">Edit</a> <a href="{{=URL('delete_skills',args=(user.username, sportskill.id))}}">Delete</a><br>
             {{pass}}
-    {{pass}}
+        {{pass}}
     </div>
 {{pass}}
 

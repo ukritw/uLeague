@@ -56,10 +56,7 @@ def search_result():
     query_string = request.vars.q or ''
     sports_id = db(db.sports_list.sport == query_string).select().first()
     #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time)
-     
-    # form=FORM( P('Search for sports:'), 
-    #            INPUT(_id='no_table_name', _name='sport'), 
-    #            INPUT(_type='submit'))
+
     form=FORM(P('Search by sport:'), 
                INPUT(_id='sports_search', _name='sport'), 
                INPUT(_type='submit'))
@@ -80,10 +77,9 @@ def search_result():
     #pagination
     if len(request.args): page=int(request.args[0])
     else: page=0
-    items_per_page=3
+    items_per_page = 10
     limitby=(page*items_per_page,(page+1)*items_per_page+1)
     events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
-    #rows=db().select(db.prime.ALL,limitby=limitby) 
     
     return dict(sports_id=sports_id, events=events, form=form ,participation_form=participation_form, target_div=DIV(_id='target'), page=page, items_per_page=items_per_page)
 

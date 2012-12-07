@@ -46,6 +46,7 @@ db.define_table('event',
     Field('date_time', 'datetime'),
     Field('location', 'string', length=256),
     Field('description', 'text', length=512),
+    Field('event_pic', 'upload'),
     Field('posting_date', 'datetime', default=datetime.datetime.utcnow(), readable = False, writable = False),
     Field('host', 'reference auth_user', default=auth.user_id, readable = False, writable = False),
     Field('guest_list', 'list:reference auth_user'), # necessary?
@@ -53,6 +54,7 @@ db.define_table('event',
 
 db.event.sport.requires = IS_IN_DB(db,'sports_list.id','%(sport)s')
 db.event.date_time.requires = IS_DATE_IN_RANGE(format=T('%Y-%m-%d %H:%M:%S'), minimum=datetime.date.today(), maximum=datetime.date.today()+datetime.timedelta(days=365), error_message='Must be a date between now and a year')
+db.event.event_pic.requires = IS_IMAGE(error_message='Invalid file type')
 #db.event.guest_list.requires = IS_IN_DB(db, 'person.user.first_name', '%(name)s', zero=T('choose one'))
     
 #------------------------------------------------------------------------------------------------------------------------------------
