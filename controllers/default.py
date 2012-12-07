@@ -11,13 +11,11 @@
 from gluon.contrib.populate import populate
 #populate(db.event,20)
 
-def teststar():
-    return dict(text="dfgdsfg")
 def index():
     text = "index"
     return dict(text=text)
 
-from array import *
+#from array import *
 
 @auth.requires_login() 
 def home():
@@ -35,6 +33,9 @@ def home():
         
     events = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
     
+    #test calendar
+    calendar_events = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).select(db.event.ALL)
+
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     form=FORM(P('Search by sport:'), 
                INPUT(_id='sports_search', _name='sport'), 
@@ -43,7 +44,7 @@ def home():
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result', vars=dict(q=form.vars.sport)))
-    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page)
+    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page, calendar_events=calendar_events)
 
 def sports_complete():
     sports = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
@@ -85,6 +86,11 @@ def search_result():
     #rows=db().select(db.prime.ALL,limitby=limitby) 
     
     return dict(sports_id=sports_id, events=events, form=form ,participation_form=participation_form, target_div=DIV(_id='target'), page=page, items_per_page=items_per_page)
+
+@auth.requires_login() 
+def calendar():
+    calendar_events = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).select(db.event.ALL)
+    return dict(calendar_events=calendar_events)
 
 def callback():
      "an ajax callback that returns a list of events by name to search_result"

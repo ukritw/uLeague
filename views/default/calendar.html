@@ -1,0 +1,42 @@
+{{extend 'layout.html'}}
+
+<script>
+    
+    $(document).ready(function() {
+    
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth();
+        var y = date.getFullYear();
+        
+        $('#weekly-calendar').fullCalendar({
+            header: {
+                left: 'none',
+                center: 'title',
+                right: 'prev,next today',
+                
+            },
+            editable: false,
+            aspectRatio: 1.9,
+                events: [
+                {{#for calendar_events in calendar_events:}}
+                {{for i,calendar_event in enumerate(calendar_events):}}{{if i!=0:}},{{pass}}
+                    {
+                        title: '{{=calendar_event.name}}',
+                        allDay: false,
+                        start: new Date('{{=calendar_event.date_time.strftime('%B %d, %Y %H:%M:%S')}}'),
+                        end: new Date('{{=calendar_event.date_time.strftime('%B %d, %Y %H:%M:%S')}}'),
+                        url: '{{=URL('event', args=calendar_event.id)}}'
+                    }
+                {{pass}}
+                ]
+        });
+        
+    });
+</script>
+
+<div id="calendar-container">
+	<h3>Weekly Calendar</h3>
+	<hr>
+	<div id='weekly-calendar'></div>
+</div>
