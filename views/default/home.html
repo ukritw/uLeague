@@ -6,7 +6,14 @@
             source: "sports_complete.json",
             minLength: 1
         }); 
+
+        $( "#eventname-search" ).autocomplete({
+            source: "eventname_complete.json",
+            minLength: 1
+        }); 
     });
+
+
 </script>
 
 
@@ -26,6 +33,11 @@
                     {{=H6(event.name)}}
                 </a>
                 <hr>
+                {{if event.event_pic:}}
+                    <img id="eventpic" src="{{=URL('download',args=event.event_pic)}}" />
+                {{else:}}
+                    <img id="eventpic" src="{{=URL('download',args=event.sport.sport_pic)}}" />
+                {{pass}}
                 {{=LI(event.date_time)}}
                 {{=LI(event.location)}}
                 {{=LI(event.host.first_name+' '+event.host.last_name)}}

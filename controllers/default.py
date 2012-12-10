@@ -38,12 +38,13 @@ def home():
 
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     form=FORM(P('Search by sport:'), 
-               INPUT(_id='sports_search', _name='sport'), 
-               INPUT(_type='submit'))
+               SPAN(INPUT(_id='sports_search', _name='sport'), 'or ',
+                INPUT(_id='eventname-search', _name='event_name'),
+                INPUT(_type='submit')))
     if form.accepts(request,session):
         response.flash = 'form accepted'
         session.sport = request.vars.sport
-        redirect(URL('search_result', vars=dict(q=form.vars.sport)))
+        redirect(URL('search_result', vars=dict(q=form.vars.sport, r=form.vars.event_name)))
     return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page, calendar_events=calendar_events)
 
 def sports_complete():
@@ -52,12 +53,18 @@ def sports_complete():
     import gluon.contrib.simplejson
     return gluon.contrib.simplejson.dumps(sport_list)
 
+def eventname_complete():
+    events = db(db.event.name.startswith(request.vars.term)).select(db.event.name).as_list()
+    event_list = [s['name'] for s in events]
+    import gluon.contrib.simplejson
+    return gluon.contrib.simplejson.dumps(event_list)
+
 def search_result():
     query_string = request.vars.q or ''
+    query_eventname_string = request.vars.r or ''
     sports_id = db(db.sports_list.sport == query_string).select().first()
-    #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time)
 
-    form=FORM(P('Search by sport:'), 
+    form=FORM(P('Search by sport:',request.vars.r), 
                INPUT(_id='sports_search', _name='sport'), 
                INPUT(_type='submit'))
     if form.accepts(request,session):
@@ -75,13 +82,17 @@ def search_result():
         response.flash = 'Participation changed'
     
     #pagination
-    if len(request.args): page=int(request.args[0])
-    else: page=0
-    items_per_page = 10
-    limitby=(page*items_per_page,(page+1)*items_per_page+1)
-    events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
-    
-    return dict(sports_id=sports_id, events=events, form=form ,participation_form=participation_form, target_div=DIV(_id='target'), page=page, items_per_page=items_per_page)
+    # if len(request.args): page=int(request.args[0])
+    # else: page=0
+    # items_per_page = 2
+    # limitby=(page*items_per_page,(page+1)*items_per_page+1)
+    import datetime
+    if request.vars.r:
+        events = db(db.event.name.contains(query_eventname_string)).select(db.event.ALL,orderby = db.event.date_time)
+    else: 
+        events = db((db.event.sport == sports_id) & (db.event.date_time >= datetime.datetime.utcnow())).select(db.event.ALL,orderby = db.event.date_time)
+
+    return dict(sports_id=sports_id, events=events, form=form ,participation_form=participation_form, query_string=query_string)
 
 @auth.requires_login() 
 def calendar():

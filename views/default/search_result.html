@@ -6,6 +6,11 @@
             source: "sports_complete.json",
             minLength: 1
         }); 
+
+        $( "#eventname-search" ).autocomplete({
+            source: "eventname_complete.json",
+            minLength: 1
+        }); 
     });
 </script>
 
@@ -13,13 +18,18 @@
 
 {{=events}}
 
+{{=query_string}}
+{{=sports_id}}
+
+{{=request.vars.skill_level}}
+
 <h4>Search result for {{=session.sport}}</h4>
 
 <div class="span3 event_border event_filter marginleft_none" >
     <h5>Filter Search Result </h5>
     <hr>
     <form name="filter" enctype="multipart/form-data" action="{{=URL('search_result')}}" method="get">
-        {{if request.vars.q:}}<input type="hidden" name="q" value="{{=request.vars.q}}">{{pass}}
+        <input type="hidden" name="q" value="{{=request.vars.q}}">
         <p>Gender</p>
     		<input type="radio" name="sex" value="Male" > Male<br>
 			<input type="radio" name="sex" value="Female" > Female<br><hr>
@@ -27,9 +37,10 @@
         	<input type="date" name="date" class="date" placeholder="{{=request.vars.date or "Month/Day/Year"}}">
         <hr>
         <p>Skill level</p>
-            <select name="skill_level" style="width: 220px;">
+            <select name="skill_level" style="width: 220px;" placeholder="{{=request.vars.skill_level or None}}">
                 <option value="None" selected>Select skill level</option>
                 <option value="1">1</option>
+                <option value="1.5">1.5</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
                 <option value="4">4</option>
@@ -40,64 +51,31 @@
         <input type="text" name="location" placeholder="{{=request.vars.location or ""}}" style="width: 220px;">
         <hr>
         <p>Name of event</p>
-        	<input type="text" name="event_name" placeholder="{{=request.vars.event_name or ""}}" style="width: 220px;"> <br>
+        	<input type="text" id="eventname-search" name="event_name" placeholder="{{=request.vars.event_name or ""}}" style="width: 220px;"> <br>
         <br>
         <p id="filter-buttons">
-            {{=A('Clear filter', _href=URL('search_result'), _class='btn btn-info')}}
+            {{=A('Clear filter', _href=URL('search_result', vars=dict(q=session.sport)), _class='btn btn-info')}}
             <input class="btn btn-success" type="submit" />
         </p>
 	</form>
 </div>
 
-<div style="float:left; margin-left: 40px;" >
-{{event_count = 0}}
-{{for i, event in enumerate(events):}}
- 	{{if i==items_per_page: break}}
- 	{{sportskill=db((db.sportskill.person == event.host) & (db.sportskill.sport == event.sport)).select().first()}}
 
-    {{if (not request.vars.sex or event.host.gender == request.vars.sex) and (not request.vars.location or event.location == request.vars.location) and (not request.vars.event_name or event.name == request.vars.event_name) and (not request.vars.date or event.date_time.date().isoformat() >= request.vars.date) : }}
+{{event_count = 0}}
+<div style="float:left; margin-left: 40px;" >
+{{for event in events:}}
+    {{sportskill=db((db.sportskill.person == event.host) & (db.sportskill.sport == event.sport)).select().first()}}
+
+    {{if (not request.vars.sex or event.host.gender == request.vars.sex or event.host.gender == request.vars.sex_f) and (not request.vars.location or event.location == request.vars.location) and (not request.vars.event_name or event.name == request.vars.event_name) and (not request.vars.date or event.date_time.date().isoformat() >= request.vars.date) : }}
 
         {{if (sportskill != None) and (request.vars.skill_level != 'None'):}}
             {{if not request.vars.skill_level or (sportskill.level == float(request.vars.skill_level)) : }}
             
-            {{#=P('sport skill for person: ', sportskill.level)}}
+            {{=P('sport skill for person: ', sportskill.level)}}
             {{event_count += 1}}
-            
-                <div class="event_border">
-                    <a href="{{=URL('event', args=event.id)}}">
-                        {{=H6(event.name)}}
-                    </a>
-                    <ul style="list-style-type:none;"
-                        
-                        {{=LI(event.date_time)}}
-                        {{=LI(event.date_time.date().isoformat())}}
-                        {{=LI(event.location)}}
-                        {{=LI(event.host.first_name+' '+event.host.last_name)}}
-                        {{=LI(event.posting_date)}}
-                        {{=LI(event.host.gender)}}
-                        {{user = db.participation(person=auth.user_id,event=event.id)}}
-                        {{if (event.host.id) == (auth.user_id): }}
-                            {{=A('Delete Event', _href=URL('delete', args=[event.id]))}} <br/>
-                            {{=A('Edit Event', _href=URL('event_edit', args=[event.id]))}} <br/>
-                            
-                        {{elif user != None: }}
-                            {{=P('drop down menu')}}
-                        	{{=participation_form}}
-                            
-                        {{else: }}
-                            
-                            {{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
-                        {{pass}}
-                    </ul>
-              </div>
-            {{pass}}
-        {{elif request.vars.skill_level == None:}}
-            {{event_count += 1}}
-
             <a href="{{=URL('event', args=event.id)}}">
-                {{=H6(event.name)}}
-            </a>
-                <div class="event_border">
+                <div style="border-style:solid; border-width:1px; margin-top:10px; " class="event_border">
+                    {{=H6(event.name)}}
                     <ul style="list-style-type:none;"
                         
                         {{=LI(event.date_time)}}
@@ -121,26 +99,48 @@
                         {{pass}}
                     </ul>
               </div>
+            </a>
+            {{pass}}
+        {{elif request.vars.skill_level == 'None' or request.vars.skill_level == None:}}
+            {{event_count += 1}}
+            <a href="{{=URL('event', args=event.id)}}">
+                <div style="border-style:solid; border-width:1px; margin-top:10px; " class="event_border">
+                    {{=H6(event.name)}}
+                    <ul style="list-style-type:none;"
+                        
+                        {{=LI(event.date_time)}}
+                        {{=LI(event.date_time.date().isoformat())}}
+                        {{=LI(event.location)}}
+                        {{=LI(event.host.first_name+' '+event.host.last_name)}}
+                        {{=LI(event.posting_date)}}
+                        {{=LI(event.host.gender)}}
+                        {{user = db.participation(person=auth.user_id,event=event.id)}}
+                        {{if (event.host.id) == (auth.user_id): }}
+                            {{=A('Delete Event', _href=URL('delete', args=[event.id]))}} <br/>
+                            {{=A('Edit Event', _href=URL('event_edit', args=[event.id]))}} <br/>
+                            
+                        {{elif user != None: }}
+                            {{=P('drop down menu')}}
+                            {{=participation_form}}
+                            
+                        {{else: }}
+                            
+                            {{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+                        {{pass}}
+                    </ul>
+              </div>
+            </a>
         {{pass}}
     {{pass}}
 {{pass}}
+</div>
+
 {{if event_count == 0: }}
-    	NO RESULT FOUND
+<div style="float:left; margin-left: 40px;" >
+        <h5>NO RESULT FOUND</h5>
+</div>
 {{pass}}
 
-</div>
+{{=event_count}}
 
-<!-- PAGINATION -->
-<div class="span12">
-    <div class="span2 offset5 pagination">
-        <ul>
-        {{if page:}}
-            <li><a href="{{=URL(args=[page-1])}}">previous</a></li>
-        {{pass}}
 
-        {{if len(events)>items_per_page:}}
-            <li><a href="{{=URL(args=[page+1])}}">next</a></li>
-        {{pass}}
-        </ul>
-    </div>
-</div>

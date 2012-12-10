@@ -34,8 +34,8 @@ db.define_table('sportskill',
 sports = ['Basketball','Badminton','Soccer','Tennis']
 # IS_LIST_OF(IS_IN_SET(....)) if you keep it as list:, but advice is not.
 #db.sportskill.sport.requires = IS_IN_DB(db,db.sports_list,'%(name)s')
-db.sportskill.sport.requires = IS_IN_DB(db, 'sports_list.id', '%(sport)s', zero=T('choose one'))
-db.sportskill.level.requires = [IS_FLOAT_IN_RANGE(0, 5), IS_IN_SET([0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0])]
+db.sportskill.sport.requires = IS_IN_DB(db, 'sports_list.id', '%(sport)s', zero=T('Select a sport'))
+db.sportskill.level.requires = IS_IN_SET(('0.5', '1.0', '1.5', '2.0', '2.5', '3.0', '3.5', '4.0', '4.5', '5.0'), zero=T('Select your skill'), error_message='You must specify your skill level')
 db.sportskill.person.requires = IS_IN_DB(db, 'auth_user.id', '%(username)s', zero=T('choose one'))
 
 #------------------------------------------------------------------------------------------------------------------------------------
@@ -73,4 +73,5 @@ db.participation.event.requires = IS_IN_DB(db, 'event.id', '%(name)s', zero=T('c
 #Sports_list table keeps the list of sport
 db.define_table('sports_list',
     Field('sport', 'string'),
+    Field('sport_pic', 'upload'),
     )
