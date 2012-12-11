@@ -87,16 +87,15 @@ hr {
   margin: 10px 0px;
 }
 .event_border {
-  border-style: solid;
-  border-width: 1px;
+  border: solid 1px #DDD;
   border-radius: 10px;
-  border-color: #DDD;
+  background-color: #666;
+  margin-top: 10px;
+  padding: 10px 0px;
 }
 .event_filter {
-  margin-top: 10px;
-  padding: 15px;
-  background-color: #444;
   opacity: 0.99;
+  padding: 10px 10px;
 }
 .event_filter hr {
   border-color: #DDD;
@@ -106,6 +105,29 @@ hr {
 }
 .event_filter #filter-buttons a {
   margin-right: 15px;
+}
+.event-pic {
+  float: left;
+  margin: .5em 10px .5em 0;
+  overflow: hidden;
+  /* this is important */
+
+}
+.event-pic img {
+  width: 200px;
+  margin: -30px -15px -60px -25px;
+}
+.event-info {
+  float: left;
+  width: 500px;
+  height: 182px;
+  margin-left: 10px;
+}
+.event-info a:hover {
+  color: #DDD;
+}
+.event-info a:link {
+  text-decoration: none;
 }
 .pagination {
   margin-top: 15px;

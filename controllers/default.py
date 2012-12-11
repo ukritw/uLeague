@@ -20,32 +20,26 @@ def index():
 @auth.requires_login() 
 def home():
     user_participations = db((db.participation.person == auth.user_id) & (db.participation.status != 'Declined')).select(db.participation.ALL)
+    
+    
     #pagination
     if len(request.args): page=int(request.args[0])
     else: page=0
-    items_per_page=2
+    items_per_page=4
     limitby=(page*items_per_page,(page+1)*items_per_page+1)
-    #events = db(db.event.sport == sports_id ).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
-    #events = array('I', [])
-
-    #for user_participation in user_participations:
-    #    events.append(user_participation.event)
-        
+    events_count = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).count()/items_per_page
     events = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
-    
-    #test calendar
-    calendar_events = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).select(db.event.ALL)
 
     search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
-    form=FORM(P('Search by sport:'), 
-               SPAN(INPUT(_id='sports_search', _name='sport'), 'or ',
-                INPUT(_id='eventname-search', _name='event_name'),
+    form=FORM(H5('Search for events:'), 
+               SPAN(INPUT(_id='sports_search', _name='sport', _placeholder='Search events by sport'), 'or ',
+                INPUT(_id='eventname-search', _name='event_name', _placeholder='Search events by name'),
                 INPUT(_type='submit')))
     if form.accepts(request,session):
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result', vars=dict(q=form.vars.sport, r=form.vars.event_name)))
-    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page, calendar_events=calendar_events)
+    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page, events_count=events_count)
 
 def sports_complete():
     sports = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
@@ -71,9 +65,6 @@ def search_result():
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result', vars=dict(q=form.vars.sport)))
-    
-    #search by event name
-    search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     
     #need to edit, not working 
     user = db.participation(person=auth.user_id,event=request.args(0))

@@ -13,7 +13,6 @@
         }); 
     });
 
-
 </script>
 
 
@@ -36,7 +35,7 @@
                 {{if event.event_pic:}}
                     <img id="eventpic" src="{{=URL('download',args=event.event_pic)}}" />
                 {{else:}}
-                    <img id="eventpic" src="{{=URL('download',args=event.sport.sport_pic)}}" />
+                    <img id="eventpic" src="{{#=URL('download',args=event.sport.sport_pic)}}" />
                 {{pass}}
                 {{=LI(event.date_time)}}
                 {{=LI(event.location)}}
@@ -88,14 +87,16 @@
 
 <!-- PAGINATION -->
 <div class="span12">
-    <div class="span2 offset5 pagination">
+    <div class="span4 offset4 pagination">
         <ul>
         {{if page:}}
+            <li ><a href="{{=URL(args=0)}}">first</a></li>
             <li><a href="{{=URL(args=[page-1])}}">previous</a></li>
         {{pass}}
 
         {{if len(events)>items_per_page:}}
             <li><a href="{{=URL(args=[page+1])}}">next</a></li>
+            <li><a href="{{=URL(args=events_count)}}">last</a></li>
         {{pass}}
         </ul>
     </div>

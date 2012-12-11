@@ -123,18 +123,22 @@ hr {
 //Search_result page
 //-------------------------------------------------------------------------------------------------------
 
+.outer-div-result {
+	
+}
+
 .event_border {
-	border-style: solid;
-	border-width: 1px; 
+	border: solid 1px #DDD;
 	border-radius: 10px; 
-	border-color: #DDD; 
+	background-color: #666;
+
+	margin-top:10px; 
+	padding: 10px 0px;
 }
 
 .event_filter {
-	margin-top:10px; 
-	padding: 15px;
-	background-color: #444;
 	opacity: 0.99;
+	padding: 10px 10px;
 
 	hr {
 		border-color: #DDD;
@@ -145,6 +149,36 @@ hr {
 		a { margin-right: 15px;}
 	}
 }
+
+.event-pic {
+	// float: left;
+	//margin-right: 50px;
+	float:left;
+	margin:.5em 10px .5em 0;
+	overflow:hidden; /* this is important */
+	//border:1px solid #ccc;
+
+	img {
+		width: 200px;
+		// height: 200px;
+		margin:-30px -15px -60px -25px;
+	}
+}
+
+.event-info {
+	float:left;
+	width: 500px;
+	height: 182px;
+
+	margin-left: 10px;
+
+	a:hover  {color: #DDD;}
+	a:link {text-decoration:none;}
+}
+
+
+
+
 
 .pagination {
 	margin-top: 15px;

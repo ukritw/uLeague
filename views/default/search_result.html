@@ -1,5 +1,6 @@
 {{extend 'layout.html'}}
 
+
 <script>
     $(function() {
         $( "#sports_search" ).autocomplete({
@@ -12,18 +13,15 @@
             minLength: 1
         }); 
     });
+
+    
 </script>
 
 {{=form}}
 
-{{=events}}
+{{#=events}}
 
-{{=query_string}}
-{{=sports_id}}
 
-{{=request.vars.skill_level}}
-
-<h4>Search result for {{=session.sport}}</h4>
 
 <div class="span3 event_border event_filter marginleft_none" >
     <h5>Filter Search Result </h5>
@@ -41,7 +39,8 @@
               pass
             }}
     		<input type="radio" name="sex" value="Male" {{=checkm}}> Male<br>
-			<input type="radio" name="sex" value="Female" {{=checkf}}> Female<br><hr>
+			<input type="radio" name="sex" value="Female" {{=checkf}}> Female<br>
+            <br><hr>
         <p>Date </p>
         	<input type="date" name="date" class="date" value="{{=request.vars.date or "Month/Day/Year"}}">
         <hr>
@@ -79,7 +78,8 @@
 
 
 {{event_count = 0}}
-<div style="float:left; margin-left: 40px;" >
+<div class="outer-div-result span8" >
+    <h4>Search result for {{=session.sport}}</h4>
 {{for event in events:}}
     {{sportskill=db((db.sportskill.person == event.host) & (db.sportskill.sport == event.sport)).select().first()}}
 
@@ -87,20 +87,24 @@
 
         {{if (sportskill != None) and (request.vars.skill_level != 'None'):}}
             {{if not request.vars.skill_level or (sportskill.level == float(request.vars.skill_level)) : }}
-            
-            {{=P('sport skill for person: ', sportskill.level)}}
+
             {{event_count += 1}}
-            <a href="{{=URL('event', args=event.id)}}">
-                <div style="border-style:solid; border-width:1px; margin-top:10px; " class="event_border">
-                    {{=H6(event.name)}}
-                    <ul style="list-style-type:none;"
-                        
-                        {{=LI(event.date_time)}}
-                        {{=LI(event.date_time.date().isoformat())}}
-                        {{=LI(event.location)}}
-                        {{=LI(event.host.first_name+' '+event.host.last_name)}}
-                        {{=LI(event.posting_date)}}
-                        {{=LI(event.host.gender)}}
+                <div class="event_border span8">
+                    <a href="{{=URL('event', args=event.id)}}">
+                        <div class="event-pic">
+                            <img id="event-image" class="" src="{{=URL('download',args=event.event_pic)}}" />
+                        </div>
+                    </a>
+                    <div class="event-info">
+                        <a href="{{=URL('event', args=event.id)}}">
+                            {{=H6(event.name)}} 
+                        </a>
+                        <hr>
+                        {{=P(XML('<i class="icon-calendar icon-white"></i>'),'  ',event.date_time.date(),' at ', event.date_time.time())}}
+                        {{=P(XML('<i class="icon-map-marker icon-white"></i>'),'  ', event.location)}}
+                        {{=P(XML('<i class="icon-user icon-white"></i>'),' Posted by ', A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])),' ', prettydate(event.posting_date,T))}}
+                        skill level?
+                        participation button
                         {{user = db.participation(person=auth.user_id,event=event.id)}}
                         {{if (event.host.id) == (auth.user_id): }}
                             {{=A('Delete Event', _href=URL('delete', args=[event.id]))}} <br/>
@@ -114,14 +118,25 @@
                             
                             {{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
                         {{pass}}
-                    </ul>
-              </div>
-            </a>
+
+                    </div>
+                    <!-- {{=H6(event.name)}}
+                    <ul style="list-style-type:none;"
+                        {{=LI(event.date_time)}}
+                        {{=LI(event.date_time.date().isoformat())}}
+                        {{=LI(event.location)}}
+                        {{=LI(event.host.first_name+' '+event.host.last_name)}}
+                        {{=LI(event.posting_date)}}
+                        {{=LI(event.host.gender)}}
+                        
+                    </ul> -->
+                </div>
+            
             {{pass}}
         {{elif request.vars.skill_level == 'None' or request.vars.skill_level == None:}}
             {{event_count += 1}}
             <a href="{{=URL('event', args=event.id)}}">
-                <div style="border-style:solid; border-width:1px; margin-top:10px; " class="event_border">
+                <div style="border-style:solid; border-width:1px; margin-top:10px; " class="event_border span8">
                     {{=H6(event.name)}}
                     <ul style="list-style-type:none;"
                         
@@ -145,19 +160,34 @@
                             {{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
                         {{pass}}
                     </ul>
-              </div>
+               </div>
             </a>
         {{pass}}
     {{pass}}
 {{pass}}
+    {{if event_count == 0: }}
+    <div style="float:left; margin-left: 40px;" >
+            <h5>NO RESULT FOUND</h5>
+    </div>
+    {{pass}}
 </div>
 
-{{if event_count == 0: }}
-<div style="float:left; margin-left: 40px;" >
-        <h5>NO RESULT FOUND</h5>
-</div>
-{{pass}}
 
-{{=event_count}}
+
+{{#=event_count}}
+
+<script>
+var max_size = 200;
+$("#event-image").each(function(i) {
+    if ($(this).height() > $(this).width()) {
+        var h = max_size;
+        var w = Math.ceil($(this).width() / $(this).height() * max_size);
+    } else {
+        var w = max_size;
+        var h = Math.ceil($(this).height() / $(this).width() * max_size);
+    }
+    $(this).css({ height: h, width: w });
+});
+</script>
 
 
