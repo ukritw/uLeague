@@ -19,6 +19,11 @@ hr {
 	border-color: #777;
 	margin-top: 0px;
 }
+
+.fix-btn {
+	margin-top: -8px;
+}
+
 //Login and Register page
 //-------------------------------------------------------------------------------------------------------
 
@@ -120,17 +125,48 @@ hr {
 	margin: 10px 0px;
 }
 
+.upcoming-events-outer {
+	border-style: solid;
+	border-width: 1px; 
+	border-radius: 10px; 
+	border-color: #DDD; 
+	padding: 0px 15px;
+}
+
+.event-recommendation {
+	opacity: 0.99;
+	padding: 0px 10px;
+	border: solid 1px #DDD;
+	border-radius: 10px; 
+	//background-color: #666;
+	margin-left: 15px;
+	hr {
+		border-color: #DDD;
+	}
+
+	.event-recommendation-info{
+		float:left;
+		background-color: #777;
+		width: 260px;
+		height: 122px;
+
+		padding: 5px 5px;
+		border-radius: 5px;
+		margin-bottom: 10px;
+
+		a:hover  {color: #DDD;}
+		a:link {text-decoration:none;}
+		p { margin: 0 0;}
+	}
+}
+
 //Search_result page
 //-------------------------------------------------------------------------------------------------------
-
-.outer-div-result {
-	
-}
 
 .event_border {
 	border: solid 1px #DDD;
 	border-radius: 10px; 
-	background-color: #666;
+	background-color: #777;
 
 	margin-top:10px; 
 	padding: 10px 0px;
@@ -152,16 +188,15 @@ hr {
 
 .event-pic {
 	// float: left;
-	//margin-right: 50px;
+	margin-left: 20px;
 	float:left;
-	margin:.5em 10px .5em 0;
 	overflow:hidden; /* this is important */
 	//border:1px solid #ccc;
 
 	img {
 		width: 200px;
-		// height: 200px;
-		margin:-30px -15px -60px -25px;
+		//height: 200px;
+		//margin:-10px -10px -10px -10px;
 	}
 }
 
@@ -170,7 +205,7 @@ hr {
 	width: 500px;
 	height: 182px;
 
-	margin-left: 10px;
+	margin-left: 20px;
 
 	a:hover  {color: #DDD;}
 	a:link {text-decoration:none;}
@@ -202,8 +237,19 @@ hr {
 	margin-top:10px;
 }
 
-#event-image {
-	margin-left: 30px;
+
+.event-image {
+	float:left;
+	// margin:.5em 10px .5em 0;
+	overflow:hidden; /* this is important */
+	border:4px solid #FFF;
+	margin-bottom: 20px;
+
+	img {
+		width: 270px;
+		// height: 200px;
+		margin:-30px -15px -60px 0px;
+	}
 }
 
 #event-informations {
@@ -211,6 +257,11 @@ hr {
 		display: none;
 	}
 }
+
+.event-btn {
+	margin: 10px 0px;
+}
+
 
 //Calendar page
 //-------------------------------------------------------------------------------------------------------

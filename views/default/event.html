@@ -3,8 +3,8 @@
 
 <div style="" class="span10 offset1 event_border" id="eventinfo">
 
-<div class="span3" id="event-image" >
-	<img src="http://placehold.it/140x140" class="img-polaroid event_image">
+<div class="span3 event-image"  >
+  <img src="{{=URL('download',args=event.event_pic)}}" />
 </div>
 
 <div class="span6" id="event-informations">
@@ -13,31 +13,22 @@
     <hr class="event_info"> 
     <div class="span6 marginleft_none">
         <div class="span3 marginleft_none">
-        {{=H6(event.date_time.date())}} <hr>
+        {{=H6(XML('<i class="icon-calendar icon-white"></i> '),event.date_time.date())}} <hr>
         </div>
         <div class="span3 marginleft_none">
-        {{=H6(event.date_time.time())}} <hr>
+        {{=H6(XML('<i class="icon-time icon-white"></i> '),event.date_time.time())}} <hr>
         </div> 
     </div>  
     <hr class="event_info">
-    {{=H6(event.location)}} <hr>
+    {{=H6(XML('<i class="icon-map-marker icon-white"></i> '), event.location)}} <hr>
     {{=H6("Posted by ",A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])) , " on ",event.posting_date)}}
         {{if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id): }}
-        	{{=A(XML('<button class="btn" type="button"> Delete Event </button>'), _href=URL('delete', args=[event.id]))}} 
-        	{{=A(XML('<button class="btn" type="button"> Edit Event </button>'), _href=URL('event_edit', args=[event.id]))}} 
+        	{{=A(XML('<button class="btn event-btn" type="button"><i class="icon-trash icon-white"></i> Cancel Event </button>'), _href=URL('delete', args=[event.id]))}} 
+        	{{=A(XML('<button class="btn event-btn" type="button"><i class="icon-edit icon-white"></i> Edit Event </button>'), _href=URL('event_edit', args=[event.id]))}} 
         {{elif user != None: }}
-            {{=participation_form}}
-            <!-- <form id="participation_form">
-                <select name="status">
-                    <option value="Accepted">Accepted</option>
-                    <option value="Declined">Declined</option>
-                    <option value="Maybe">Maybe</option>
-                </select>
-                <input type="button" value="submit" />
-                <input type="hidden" name="_formname" value="participationform" />
-            </form> -->
+            {{=form}}
         {{else: }}
-            {{=A(XML('<button class="btn" type="button"> Join </button>'), _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+            {{=A(XML('<button class="btn event-btn" type="button"><i class="icon-plus icon-white"></i> Join </button>'), _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
             
         {{pass}}
     <hr>
@@ -49,7 +40,7 @@
   <div class="accordion-group">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-        Description
+        <i class="icon-align-justify icon-white"></i> Description
       </a>
     </div>
     <div id="collapseOne" class="accordion-body collapse in">
@@ -64,40 +55,46 @@
   <div class="accordion-group">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseTwo">
-        Participants
+        <i class="icon-user icon-white"></i> Participants
       </a>
     </div>
     <div id="collapseTwo" class="accordion-body collapse in">
       <div class="accordion-inner">
       	<ul>
-        {{for participant in participants:}}
         
-        </ul>
           <h6>Accepted</h6>
-          	{{if participant.status == 'Accepted':}}
-          		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
-          	{{pass}}
+            {{for participant in participants:}}
+            	{{if participant.status == 'Accepted':}}
+            		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+            	{{pass}}
+            {{pass}}
           <hr class="event_info">
           	
           <h6>Maybe</h6>
-          	{{if participant.status == 'Maybe':}}
-          		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
-          	{{pass}}
+            {{for participant in participants:}}
+            	{{if participant.status == 'Maybe':}}
+            		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+            	{{pass}}
+            {{pass}}
           <hr class="event_info">
           
           <h6>Declined</h6>
-          	{{if participant.status == 'Declined':}}
-          		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
-          	{{pass}}
+            {{for participant in participants:}}
+            	{{if participant.status == 'Declined':}}
+            		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+            	{{pass}}
+            {{pass}}
           <hr class="event_info">
           
           <h6>Invited</h6>
-          	{{if participant.status == 'Invited':}}
-          		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
-          	{{pass}}
+            {{for participant in participants:}}
+            	{{if participant.status == 'Invited':}}
+            		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+            	{{pass}}
+            {{pass}}
           <hr class="event_info">
-          	
-          {{pass}}
+
+        </ul>
       </div>
     </div>
   </div>

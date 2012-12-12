@@ -16,6 +16,9 @@ hr {
   border-color: #777;
   margin-top: 0px;
 }
+.fix-btn {
+  margin-top: -8px;
+}
 .form-header {
   margin: 0 auto;
   text-align: center;
@@ -86,10 +89,45 @@ hr {
   border-color: #DDD;
   margin: 10px 0px;
 }
+.upcoming-events-outer {
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 10px;
+  border-color: #DDD;
+  padding: 0px 15px;
+}
+.event-recommendation {
+  opacity: 0.99;
+  padding: 0px 10px;
+  border: solid 1px #DDD;
+  border-radius: 10px;
+  margin-left: 15px;
+}
+.event-recommendation hr {
+  border-color: #DDD;
+}
+.event-recommendation .event-recommendation-info {
+  float: left;
+  background-color: #777;
+  width: 260px;
+  height: 122px;
+  padding: 5px 5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+.event-recommendation .event-recommendation-info a:hover {
+  color: #DDD;
+}
+.event-recommendation .event-recommendation-info a:link {
+  text-decoration: none;
+}
+.event-recommendation .event-recommendation-info p {
+  margin: 0 0;
+}
 .event_border {
   border: solid 1px #DDD;
   border-radius: 10px;
-  background-color: #666;
+  background-color: #777;
   margin-top: 10px;
   padding: 10px 0px;
 }
@@ -107,21 +145,20 @@ hr {
   margin-right: 15px;
 }
 .event-pic {
+  margin-left: 20px;
   float: left;
-  margin: .5em 10px .5em 0;
   overflow: hidden;
   /* this is important */
 
 }
 .event-pic img {
   width: 200px;
-  margin: -30px -15px -60px -25px;
 }
 .event-info {
   float: left;
   width: 500px;
   height: 182px;
-  margin-left: 10px;
+  margin-left: 20px;
 }
 .event-info a:hover {
   color: #DDD;
@@ -143,11 +180,23 @@ hr {
 #participation_form {
   margin-top: 10px;
 }
-#event-image {
-  margin-left: 30px;
+.event-image {
+  float: left;
+  overflow: hidden;
+  /* this is important */
+
+  border: 4px solid #FFF;
+  margin-bottom: 20px;
+}
+.event-image img {
+  width: 270px;
+  margin: -30px -15px -60px 0px;
 }
 #event-informations #participation_id__row {
   display: none;
+}
+.event-btn {
+  margin: 10px 0px;
 }
 #calendar-container {
   margin-top: -25px;

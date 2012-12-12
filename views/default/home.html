@@ -20,84 +20,81 @@
 
 {{=form}}
 
-<h4>Upcoming Events</h4>
+<div class="upcoming-events-outer marginleft_none span8" >
+    <h4>Upcoming Events</h4>
+    <hr>
 
-<ul>
-{{for i, event in enumerate(events):}}
-    {{if i==items_per_page: break}}
-    {{event = db(db.event.id == event).select().first()}}
-        <div class="event_border">
-            <ul style="list-style-type:none;">
+    {{for i, event in enumerate(events):}}
+        {{if i==items_per_page: break}}
+        {{event = db(db.event.id == event).select().first()}}
+            <div class="event_border span8">
                 <a href="{{=URL('event', args=event.id)}}">
-                    {{=H6(event.name)}}
+                    <div class="event-pic">
+                        <img src="{{=URL('download',args=event.event_pic)}}" />
+                    </div>
                 </a>
-                <hr>
-                {{if event.event_pic:}}
-                    <img id="eventpic" src="{{=URL('download',args=event.event_pic)}}" />
-                {{else:}}
-                    <img id="eventpic" src="{{#=URL('download',args=event.sport.sport_pic)}}" />
-                {{pass}}
-                {{=LI(event.date_time)}}
-                {{=LI(event.location)}}
-                {{=LI(event.host.first_name+' '+event.host.last_name)}}
-                {{=LI(event.posting_date)}}
-                {{=LI(event.host.gender)}}
+                <div class="event-info">
+                    <a href="{{=URL('event', args=event.id)}}">
+                        {{=H6(event.name)}} 
+                    </a>
+                    <hr>
+                    {{=P(XML('<i class="icon-calendar icon-white"></i>'),'  ',event.date_time.date(),' at ', event.date_time.time())}}
+                    {{=P(XML('<i class="icon-map-marker icon-white"></i>'),'  ', event.location)}}
+                    {{=P(XML('<i class="icon-user icon-white"></i>'),' Posted by ', A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])),' ', prettydate(event.posting_date,T))}}
+                    {{user = db.participation(person=auth.user_id,event=event.id)}}
+                    {{if (event.host.id) == (auth.user_id): }}
+                        {{=A(XML('<button class="btn event-btn" type="button"><i class="icon-trash icon-white"></i> Cancel Event </button>'), _href=URL('delete', args=[event.id]))}} 
+                        {{=A(XML('<button class="btn event-btn" type="button"><i class="icon-edit icon-white"></i> Edit Event </button>'), _href=URL('event_edit', args=[event.id]))}} 
+                        
+                    {{elif user != None: }}
+                        {{=P(XML('<i class="icon-ok icon-white"></i>'),' Your RSVP: ',B(user.status))}}
+                    {{else: }}
+                        
+                        {{=A(XML('<button class="btn" type="button"><i class="icon-plus icon-white"></i> Join </button>'), _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+                    {{pass}}
+                </div>
+            </div>
+    {{pass}}
 
-                {{if (event.host.id) == (auth.user_id): }}
-                    {{=A('Delete Event', _href=URL('delete', args=[event.id]))}} <br/>
-                    {{=A('Edit Event', _href=URL('event_edit', args=[event.id]))}} <br/>
-                    
-                {{elif user != None: }}
-                    {{=P('drop down menu')}}
-                    {{#participation_form}}
-                    
-                {{else: }}
-                    
-                    {{=A('Join', _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
-                {{pass}}
+    <!-- PAGINATION -->
+    <div class="span8">
+        <div class="span4 offset2 pagination">
+            <ul>
+            {{if page:}}
+                <li ><a href="{{=URL(args=0)}}">first</a></li>
+                <li><a href="{{=URL(args=[page-1])}}">previous</a></li>
+            {{pass}}
+
+            {{if len(events)>items_per_page:}}
+                <li><a href="{{=URL(args=[page+1])}}">next</a></li>
+                <li><a href="{{=URL(args=events_count)}}">last</a></li>
+            {{pass}}
             </ul>
-      </div>
-   
-{{pass}}
-</ul>
-<br>
-<br>
-
-
-{{= A('Create New Event', _href=URL('create')) }}
-<br>
-{{= A('View your profile', _href=URL('userinfo',args=user.username)) }}
-<br>
-
-<!-- <h3> Search for events </h3>
-<div class="ui-widget">
-{{=search_form}}<br/>
-{{=target_div}}
-</div> -->
-
-<!-- <div style="float:left;" class="span8">
-{{if page:}}
-<a href="{{=URL(args=[page-1])}}">previous</a>
-{{pass}}
-
-{{if len(events)>items_per_page:}}
-<a href="{{=URL(args=[page+1])}}">next</a>
-{{pass}}
-</div> -->
-
-<!-- PAGINATION -->
-<div class="span12">
-    <div class="span4 offset4 pagination">
-        <ul>
-        {{if page:}}
-            <li ><a href="{{=URL(args=0)}}">first</a></li>
-            <li><a href="{{=URL(args=[page-1])}}">previous</a></li>
-        {{pass}}
-
-        {{if len(events)>items_per_page:}}
-            <li><a href="{{=URL(args=[page+1])}}">next</a></li>
-            <li><a href="{{=URL(args=events_count)}}">last</a></li>
-        {{pass}}
-        </ul>
+        </div>
     </div>
+
 </div>
+
+<div class="span3 event-recommendation">
+    <h5>Events Recommendation </h5> <hr>
+    {{for event in recommended_events:}}
+        <div class="event-recommendation-info">
+            <a href="{{=URL('event', args=event.id)}}">
+                {{=H6(event.name)}}
+            </a>
+            {{=P(' ',event.sport.sport)}}
+            {{=P(XML('<i class="icon-calendar icon-white"></i>'),'  ',event.date_time.date(),' at ', event.date_time.time())}}
+            {{=P(XML('<i class="icon-map-marker icon-white"></i>'),'  ', event.location)}}
+            {{=P(XML('<i class="icon-user icon-white"></i>'),' By ', A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])),' ', prettydate(event.posting_date,T))}}
+            {{user = db.participation(person=auth.user_id,event=event.id)}}
+        </div>
+    {{pass}}
+</div>
+
+    <div class="span4 get-started" style="text-align: center; margin-top: 25px;">
+          <h4 style="margin-bottom: 10px;">Can't find any matching event?</h4>
+          {{=A('Create one', _href=URL('create'), _class='btn btn-success')}}
+    </div>
+
+
+

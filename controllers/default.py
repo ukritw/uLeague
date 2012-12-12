@@ -39,7 +39,11 @@ def home():
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result', vars=dict(q=form.vars.sport, r=form.vars.event_name)))
-    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page, events_count=events_count)
+
+    #events recommendation
+    recommended_events = db().select(db.event.ALL, orderby = db.event.date_time, limitby=(0, 4))
+
+    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page, events_count=events_count, recommended_events=recommended_events)
 
 def sports_complete():
     sports = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
@@ -58,19 +62,13 @@ def search_result():
     query_eventname_string = request.vars.r or ''
     sports_id = db(db.sports_list.sport == query_string).select().first()
 
-    form=FORM(P('Search by sport:',request.vars.r), 
-               INPUT(_id='sports_search', _name='sport'), 
+    form=FORM(H4('Search by sport:'), 
+               INPUT(_id='sports_search', _name='sport', _placeholder=query_string), 
                INPUT(_type='submit'))
     if form.accepts(request,session):
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result', vars=dict(q=form.vars.sport)))
-    
-    #need to edit, not working 
-    user = db.participation(person=auth.user_id,event=request.args(0))
-    participation_form = SQLFORM(db.participation,user)
-    if participation_form.process().accepted:
-        response.flash = 'Participation changed'
     
     #pagination
     # if len(request.args): page=int(request.args[0])
@@ -85,7 +83,7 @@ def search_result():
     else: 
         events = db((db.event.sport == sports_id) & (db.event.date_time >= datetime.datetime.utcnow())).select(db.event.ALL,orderby = db.event.date_time)
 
-    return dict(sports_id=sports_id, events=events, form=form ,participation_form=participation_form, query_string=query_string)
+    return dict(sports_id=sports_id, events=events, form=form , query_string=query_string)
 
 @auth.requires_login() 
 def calendar():
@@ -127,16 +125,25 @@ def event():
     participants = db(db.participation.event == event_id).select(db.participation.ALL)
     user = db.participation(person=auth.user_id,event=request.args(0))
     
-    # form = FORM('Participation:',
-    #       SELECT('Accepted','Declined','Maybe',_name="participation"),
-    #       INPUT(_type='submit'))
-    #form = SQLFORM(db.participation,user)
-    form = SQLFORM(db.participation, user)
-    if form.process(session=None, formname='participationform').accepted:
+    #Setting the default value for participation changing form
+    if user:
+        if user.status == 'Accepted':
+            participation_order_xml = '<option value="Accepted">Accepted</option><option value="Declined">Declined</option><option value="Maybe">Maybe</option>'
+        elif user.status == 'Declined':
+            participation_order_xml = '<option value="Declined">Declined</option><option value="Accepted">Accepted</option><option value="Maybe">Maybe</option>'
+        else:
+            participation_order_xml = '<option value="Maybe">Maybe</option><option value="Accepted">Accepted</option><option value="Declined">Declined</option>'
+    else: 
+        participation_order_xml =''
+    select_participation_xml ='<select name="status">'+participation_order_xml+'</select>'
+    form = FORM(XML(select_participation_xml),
+          INPUT(_type='Submit', _class="fix-btn"), _class="event-btn")
+    if form.process().accepted:
         response.flash = 'Participation changed'
-        redirect(URL('change_participation'))
+        redirect(URL('change_participation', args=[event_id,request.vars.status]))
     elif form.errors:
         response.flash = 'form has errors'
+
     #else:
     # response.flash = 'please fill the form'
     
@@ -147,10 +154,12 @@ def event():
     
     string = db.event(request.args(0,cast=int)).host.id
     stringb = auth.user_id
-    return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants,user=user, participation_form=participation_form )
+    return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants,user=user, participation_form=participation_form, form=form )
 
 def change_participation():
-    #redirect(URL('home'))
+    db((db.participation.person == auth.user_id) & (db.participation.event == request.args[0])).update(status = request.args[1])
+    db.commit()
+    redirect(URL('event',args=request.args[0]))
     return ()
     
 def delete():
