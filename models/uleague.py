@@ -76,3 +76,12 @@ db.define_table('sports_list',
     Field('sport', 'string'),
     Field('sport_pic', 'upload'),
     )
+
+#------------------------------------------------------------------------------------------------------------------------------------
+#comment table stores comments for events
+db.define_table('comments',
+     Field('comment', 'text'),
+     Field('posting_date', 'datetime', default=datetime.datetime.utcnow()),
+     Field('author', 'reference auth_user'),
+     Field('event', 'reference event'),
+     )

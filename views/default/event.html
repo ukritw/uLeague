@@ -99,5 +99,31 @@
       </div>
     </div>
   </div>
+  
+  <div class="accordion span8 offset1 " id="accordion4">
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion4" href="#collapseThree">
+          <i class="icon-align-justify icon-white"></i> Comments
+        </a>
+      </div>
+      <div id="collapseThree" class="accordion-body collapse in">
+        <div class="accordion-inner">
+            {{for comments in comments:}}
+            	<div class="event-comment" style="background-color: #666;">
+                	{{=P(' ',comments.comment)}}
+                    {{=P('Posted on: ',comments.posting_date)}}
+                	<a href="{{=URL('userinfo',args=(comments.author.username))}}">
+                	{{=P(' By: ',comments.author.username)}}
+                    </a>
+                </div>
+            {{pass}}
+            <div class="event-comment" style="background-color: #666;">
+                {{=comment_form}}
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
 </div>

@@ -124,6 +124,7 @@ def create():
 def event():
     this_event = db.event(request.args(0,cast=int)) or redirect(URL('home'))
     event_id = db.event(request.args(0,cast=int)).id
+    comments = db((db.event.id == db.comments.event)).select(db.comments.ALL)
     delete_button = " "
     #if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id):
     delete_button =  A('Delete', _href=URL('delete', args=[event_id]))
@@ -161,7 +162,15 @@ def event():
     
     string = db.event(request.args(0,cast=int)).host.id
     stringb = auth.user_id
-    return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants,user=user, participation_form=participation_form, form=form )
+    
+    comment_form = SQLFORM(db.comments, fields=['comment'])
+    comment_form.vars.author = auth.user.id
+    comment_form.vars.event = event_id
+    if comment_form.process().accepted:
+        response.flash = 'comment made'
+        redirect(URL('event', args=event_id))
+        
+    return dict(event=this_event, delete_button = delete_button, string = string, stringb=stringb, participants = participants,user=user, participation_form=participation_form, form=form, comments=comments, comment_form=comment_form)
 
 def change_participation():
     db((db.participation.person == auth.user_id) & (db.participation.event == request.args[0])).update(status = request.args[1])
