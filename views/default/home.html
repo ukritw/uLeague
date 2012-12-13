@@ -27,7 +27,7 @@
     {{for i, event in enumerate(events):}}
         {{if i==items_per_page: break}}
         {{event = db(db.event.id == event).select().first()}}
-            <div class="event_border span8">
+            <div class="upcomingevent-border span8">
                 <a href="{{=URL('event', args=event.id)}}">
                     <div class="event-pic">
                         <img src="{{=URL('download',args=event.event_pic)}}" />
@@ -57,8 +57,8 @@
     {{pass}}
 
     <!-- PAGINATION -->
-    <div class="span8">
-        <div class="span4 offset2 pagination">
+    <div class="span8 marginleft_none pagination pagination-centered">
+        
             <ul>
             {{if page:}}
                 <li ><a href="{{=URL(args=0)}}">first</a></li>
@@ -70,24 +70,60 @@
                 <li><a href="{{=URL(args=events_count)}}">last</a></li>
             {{pass}}
             </ul>
-        </div>
+       
     </div>
 
 </div>
 
+
+
 <div class="span3 event-recommendation">
     <h5>Events Recommendation </h5> <hr>
-    {{for event in recommended_events:}}
-        <div class="event-recommendation-info">
-            <a href="{{=URL('event', args=event.id)}}">
-                {{=H6(event.name)}}
-            </a>
-            {{=P(' ',event.sport.sport)}}
-            {{=P(XML('<i class="icon-calendar icon-white"></i>'),'  ',event.date_time.date(),' at ', event.date_time.time())}}
-            {{=P(XML('<i class="icon-map-marker icon-white"></i>'),'  ', event.location)}}
-            {{=P(XML('<i class="icon-user icon-white"></i>'),' By ', A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])),' ', prettydate(event.posting_date,T))}}
-            {{user = db.participation(person=auth.user_id,event=event.id)}}
-        </div>
+    {{eventtotal = 0}}
+    {{for I in sportskill_list:}} 
+            {{sportcount = 0}}
+            {{for event in recommended_events:}}
+                {{if event.sport == I:}}
+                    {{eventtotal += 1}}
+                    {{sportcount += 1}}
+                    <div class="event-recommendation-info">
+                        <a href="{{=URL('event', args=event.id)}}">
+                            {{=H6(event.name)}}
+                        </a>
+                        {{=P(' ',event.sport.sport)}}
+                        {{=P(XML('<i class="icon-calendar icon-white"></i>'),'  ',event.date_time.date(),' at ', event.date_time.time())}}
+                        {{=P(XML('<i class="icon-map-marker icon-white"></i>'),'  ', event.location)}}
+                        {{=P(XML('<i class="icon-user icon-white"></i>'),' By ', A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])),' ', prettydate(event.posting_date,T))}}
+                        {{user = db.participation(person=auth.user_id,event=event.id)}}
+                    </div>
+                {{pass}}
+                {{if sportcount >= 2:
+                    break
+                pass}}
+                <!-- Maximum number of recommendation by sportskill -->
+                {{if eventtotal >= 8:
+                    break
+                pass}}
+            {{pass}}
+    {{pass}}
+
+    {{if eventtotal == 0:}}
+        {{for event in recommended_events:}}
+            {{eventtotal += 1}}
+            <div class="event-recommendation-info">
+                <a href="{{=URL('event', args=event.id)}}">
+                    {{=H6(event.name)}}
+                </a>
+                {{=P(' ',event.sport.sport)}}
+                {{=P(XML('<i class="icon-calendar icon-white"></i>'),'  ',event.date_time.date(),' at ', event.date_time.time())}}
+                {{=P(XML('<i class="icon-map-marker icon-white"></i>'),'  ', event.location)}}
+                {{=P(XML('<i class="icon-user icon-white"></i>'),' By ', A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])),' ', prettydate(event.posting_date,T))}}
+                {{user = db.participation(person=auth.user_id,event=event.id)}}
+            </div>
+            {{if eventtotal >= 8:
+                break
+            pass}}
+        {{pass}}
     {{pass}}
 </div>
 

@@ -11,7 +11,8 @@ auth = Auth(db)
 auth.settings.extra_fields['auth_user']= [
     Field('gender', 'string'),
     Field('dob', 'date', default=datetime.date.today()+datetime.timedelta(days=-3650)),
-    Field('phone_number', 'string'),    
+    Field('phone_number', 'string'),
+    Field('description', 'text', length=256),    
     Field('profile_pic', 'upload'),
   ]
 auth.define_tables(username=True, signature=False)

@@ -7,6 +7,18 @@ body {
 	background-repeat:repeat;
 }
 
+//footer
+.site-map {
+	margin:0;
+	margin-left: 390px;
+	padding:0;
+
+	li {
+		display:inline;
+		padding:0;
+		margin:0 10px;
+	}
+}
 .navbar-inner {
 	color: #333;
 }
@@ -16,7 +28,7 @@ body {
 }
 
 hr {
-	border-color: #777;
+	border-color: #DDD;
 	margin-top: 0px;
 }
 
@@ -58,9 +70,14 @@ hr {
 	}
 	#caption {
 		color: white; 
+		width: 300px;
 
+		padding: 2px 10px 10px 10px;
+		background: rgba(0, 0, 0, 0.4);
+		border-radius: 5px;
+		//background-color: #666;
 		position: relative;
-		top: -230px;
+		top: -260px;
 		left: 100px;
 
 		small {
@@ -78,6 +95,7 @@ hr {
 .features {
 	margin-top: -100px;
 	color: #EEE;
+
 	img {
 			display: block;
 			margin: 0 auto;
@@ -93,7 +111,7 @@ hr {
 		p {
 			font-size: 15px;
 			color: #DDD;
-
+			text-align: center;
 			padding: 0 30px;
 		}
 	}
@@ -122,13 +140,14 @@ hr {
 	border-width: 1px; 
 	border-radius: 10px; 
 	border-color: #DDD; 
-	margin: 10px 0px;
+	//margin: 10px 0px;
+	margin-left: 69px;
 }
 
 .upcoming-events-outer {
 	border-style: solid;
 	border-width: 1px; 
-	border-radius: 10px; 
+	border-radius: 5px; 
 	border-color: #DDD; 
 	padding: 0px 15px;
 }
@@ -137,7 +156,7 @@ hr {
 	opacity: 0.99;
 	padding: 0px 10px;
 	border: solid 1px #DDD;
-	border-radius: 10px; 
+	border-radius: 5px; 
 	//background-color: #666;
 	margin-left: 15px;
 	hr {
@@ -160,12 +179,27 @@ hr {
 	}
 }
 
+.upcomingevent-border {
+	background-color: #777;
+
+	border-style: solid;
+	border-width: 1px; 
+	border-radius: 10px; 
+	border-color: #DDD; 
+	margin: 10px 0px;
+	padding: 10px 0px;
+}
+
+.event-search {
+	margin-bottom: 20px;
+}
+
 //Search_result page
 //-------------------------------------------------------------------------------------------------------
 
 .event_border {
 	border: solid 1px #DDD;
-	border-radius: 10px; 
+	border-radius: 5px; 
 	background-color: #777;
 
 	margin-top:10px; 
@@ -296,20 +330,100 @@ hr {
 
 }
 
+//Userinfo page
+//-------------------------------------------------------------------------------------------------------
+
+.info_table {
+	margin-top: -10px;
+	margin-bottom: 15px;
+
+	h6 {
+		font-weight: 550;
+	}
+
+}
+
+#basic-informations {
+	height: 385px;
+}
 
 
 
+.user-schedule {
+	opacity: 0.99;
+	padding: 0px 10px;
+	border: solid 1px #DDD;
+	border-radius: 5px; 
+	
+	margin-left: 28px;
+	hr {
+		border-color: #DDD;
+	}
 
+	.event-recommendation-info{
+		float:left;
+		background-color: #777;
+		width: 260px;
+		height: 122px;
 
+		padding: 5px 5px;
+		border-radius: 5px;
+		margin-bottom: 10px;
 
+		a:hover  {color: #DDD;}
+		a:link {text-decoration:none;}
+		p { margin: 0 0;}
+	}
+}
 
+.sport-skills {
+	opacity: 0.99;
+	//padding: 0px 10px;
+	border: solid 1px #DDD;
+	border-radius: 5px; 
+	margin-left: 15px;
+	h5 {margin-left: 10px;}
+	hr {
+		margin: 0px 10px;
+		margin-bottom: 20px;
+		border-color: #DDD;
+	}
 
+	.individual-skill{
+		float:left;
+		background-color: #777;
+		width: 120px;
+		height: 100px;
 
+		padding: 5px 5px;
+		border-radius: 5px;
+		margin-bottom: 10px;
+		margin-left: 10px;
 
+		a:hover  {color: #DDD;}
+		a:link {text-decoration:none;}
+		p { margin: 0 0; text-align: center;}
+		h3 { margin: 0 0;
+			text-align: center;
+		}
+	}
+}
 
+.edit-profile-btn {
+	float:right;
+	position:relative;
+	top:-30px;
+	left: 30px;
+}
 
+.label {
+	display: block;
+}
 
+.sport-skill-btn {
 
+	text-align: center;
+}
 
 
 

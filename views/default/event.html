@@ -1,118 +1,103 @@
 {{extend 'layout.html'}}
 
 
-<div style="" class="span10 offset1 event_border" id="eventinfo">
+<div style="" class="span10 event_border" id="eventinfo">
 
-<div class="span3 event-image"  >
-  <img src="{{=URL('download',args=event.event_pic)}}" />
-</div>
+  <div class="span3 event-image"  >
+    <img src="{{=URL('download',args=event.event_pic)}}" />
+  </div>
 
-<div class="span6" id="event-informations">
-    {{=H4(event.name)}} 
-    {{=event.sport.sport}}
-    <hr class="event_info"> 
-    <div class="span6 marginleft_none">
-        <div class="span3 marginleft_none">
-        {{=H6(XML('<i class="icon-calendar icon-white"></i> '),event.date_time.date())}} <hr>
+  <div class="span6" id="event-informations">
+      {{=H4(event.name)}} 
+      {{=event.sport.sport}}
+      <hr class="event_info"> 
+      <div class="span6 marginleft_none">
+          <div class="span3 marginleft_none">
+          {{=H6(XML('<i class="icon-calendar icon-white"></i> '),event.date_time.date())}} <hr>
+          </div>
+          <div class="span3 marginleft_none">
+          {{=H6(XML('<i class="icon-time icon-white"></i> '),event.date_time.time())}} <hr>
+          </div> 
+      </div>  
+      <hr class="event_info">
+      {{=H6(XML('<i class="icon-map-marker icon-white"></i> '), event.location)}} <hr>
+      {{=H6("Posted by ",A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])) , " on ",event.posting_date)}}
+          {{if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id): }}
+          	{{=A(XML('<button class="btn event-btn" type="button"><i class="icon-trash icon-white"></i> Cancel Event </button>'), _href=URL('delete', args=[event.id]))}} 
+          	{{=A(XML('<button class="btn event-btn" type="button"><i class="icon-edit icon-white"></i> Edit Event </button>'), _href=URL('event_edit', args=[event.id]))}} 
+          {{elif user != None: }}
+              {{=form}}
+          {{else: }}
+              {{=A(XML('<button class="btn event-btn" type="button"><i class="icon-plus icon-white"></i> Join </button>'), _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+              
+          {{pass}}
+      <hr>
+  </div>
+
+
+
+  <div class="accordion span8 offset1 " id="accordion2">
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+          <i class="icon-align-justify icon-white"></i> Description
+        </a>
+      </div>
+      <div id="collapseOne" class="accordion-body collapse in">
+        <div class="accordion-inner">
+        	{{=event.description}}
         </div>
-        <div class="span3 marginleft_none">
-        {{=H6(XML('<i class="icon-time icon-white"></i> '),event.date_time.time())}} <hr>
-        </div> 
-    </div>  
-    <hr class="event_info">
-    {{=H6(XML('<i class="icon-map-marker icon-white"></i> '), event.location)}} <hr>
-    {{=H6("Posted by ",A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])) , " on ",event.posting_date)}}
-        {{if (db.event(request.args(0,cast=int)).host.id) == (auth.user_id): }}
-        	{{=A(XML('<button class="btn event-btn" type="button"><i class="icon-trash icon-white"></i> Cancel Event </button>'), _href=URL('delete', args=[event.id]))}} 
-        	{{=A(XML('<button class="btn event-btn" type="button"><i class="icon-edit icon-white"></i> Edit Event </button>'), _href=URL('event_edit', args=[event.id]))}} 
-        {{elif user != None: }}
-            {{=form}}
-        {{else: }}
-            {{=A(XML('<button class="btn event-btn" type="button"><i class="icon-plus icon-white"></i> Join </button>'), _href=URL('join', args=[event.id, auth.user_id]))}} <br/>
+      </div>
+    </div>
+  </div>
+
+  <div class="accordion span8 offset1 " id="accordion3">
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseTwo">
+          <i class="icon-user icon-white"></i> Participants
+        </a>
+      </div>
+      <div id="collapseTwo" class="accordion-body collapse in">
+        <div class="accordion-inner">
+        	<ul>
+          
+            <h6>Accepted</h6>
+              {{for participant in participants:}}
+              	{{if participant.status == 'Accepted':}}
+              		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+              	{{pass}}
+              {{pass}}
+            <hr class="event_info">
+            	
+            <h6>Maybe</h6>
+              {{for participant in participants:}}
+              	{{if participant.status == 'Maybe':}}
+              		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+              	{{pass}}
+              {{pass}}
+            <hr class="event_info">
             
-        {{pass}}
-    <hr>
-</div>
+            <h6>Declined</h6>
+              {{for participant in participants:}}
+              	{{if participant.status == 'Declined':}}
+              		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+              	{{pass}}
+              {{pass}}
+            <hr class="event_info">
+            
+            <h6>Invited</h6>
+              {{for participant in participants:}}
+              	{{if participant.status == 'Invited':}}
+              		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
+              	{{pass}}
+              {{pass}}
+            <hr class="event_info">
 
-
-
-<div class="accordion span8 offset1 " id="accordion2">
-  <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
-        <i class="icon-align-justify icon-white"></i> Description
-      </a>
-    </div>
-    <div id="collapseOne" class="accordion-body collapse in">
-      <div class="accordion-inner">
-      	{{=event.description}}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
-<div class="accordion span8 offset1 " id="accordion3">
-  <div class="accordion-group">
-    <div class="accordion-heading">
-      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion3" href="#collapseTwo">
-        <i class="icon-user icon-white"></i> Participants
-      </a>
-    </div>
-    <div id="collapseTwo" class="accordion-body collapse in">
-      <div class="accordion-inner">
-      	<ul>
-        
-          <h6>Accepted</h6>
-            {{for participant in participants:}}
-            	{{if participant.status == 'Accepted':}}
-            		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
-            	{{pass}}
-            {{pass}}
-          <hr class="event_info">
-          	
-          <h6>Maybe</h6>
-            {{for participant in participants:}}
-            	{{if participant.status == 'Maybe':}}
-            		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
-            	{{pass}}
-            {{pass}}
-          <hr class="event_info">
-          
-          <h6>Declined</h6>
-            {{for participant in participants:}}
-            	{{if participant.status == 'Declined':}}
-            		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
-            	{{pass}}
-            {{pass}}
-          <hr class="event_info">
-          
-          <h6>Invited</h6>
-            {{for participant in participants:}}
-            	{{if participant.status == 'Invited':}}
-            		{{=P(A(participant.person.first_name + ' ' + participant.person.last_name + ' - ' , _href=URL('userinfo', args=[participant.person.username])), participant.status)}}
-            	{{pass}}
-            {{pass}}
-          <hr class="event_info">
-
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<div class="span8 offset1">
-
-
-
-
-
-<h6> Dev. Info </h6>
-{{=string}}
-{{=stringb}}
-{{=user}}
-
-
-    </div>
 
 </div>

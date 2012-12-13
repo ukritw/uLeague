@@ -30,20 +30,27 @@ def home():
     events_count = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).count()/items_per_page
     events = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).select(db.event.ALL,orderby = db.event.date_time,limitby=limitby)
 
-    search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
+    #search_form = FORM(INPUT(_id='keyword',_name='keyword', _onkeyup="ajax('callback', ['keyword'], 'target');"))
     form=FORM(H5('Search for events:'), 
                SPAN(INPUT(_id='sports_search', _name='sport', _placeholder='Search events by sport'), 'or ',
                 INPUT(_id='eventname-search', _name='event_name', _placeholder='Search events by name'),
-                INPUT(_type='submit')))
+                INPUT(_type='submit')), _class="navbar-form pull-left event-search")
     if form.accepts(request,session):
         response.flash = 'form accepted'
         session.sport = request.vars.sport
         redirect(URL('search_result', vars=dict(q=form.vars.sport, r=form.vars.event_name)))
 
-    #events recommendation
-    recommended_events = db().select(db.event.ALL, orderby = db.event.date_time, limitby=(0, 4))
 
-    return dict(user=auth.user, search_form=search_form, target_div=DIV(_id='target'), form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page, events_count=events_count, recommended_events=recommended_events)
+    sportskills = db(db.sportskill.person == auth.user_id).select(db.sportskill.ALL)
+
+    from array import *
+    sportskill_list = array('I', [])
+    for skill in sportskills:
+        sportskill_list.append(skill.sport)
+    #events recommendation
+    recommended_events = db().select(db.event.ALL, orderby = db.event.date_time)
+
+    return dict(user=auth.user, form=form, user_participations=user_participations, events=events, page=page, items_per_page=items_per_page, events_count=events_count, recommended_events=recommended_events,sportskill_list=sportskill_list)
 
 def sports_complete():
     sports = db(db.sports_list.sport.startswith(request.vars.term)).select(db.sports_list.sport).as_list()
@@ -192,8 +199,9 @@ def event_edit():
 @auth.requires_login()
 def userinfo():
      user = db.auth_user(username=request.args(0))
-     sportskill = db(db.sportskill.person == user).select(db.sportskill.ALL)
-     return dict(user=user,sportskill=sportskill)
+     sportskill = db(db.sportskill.person == user).select(db.sportskill.ALL, orderby=~db.sportskill.level)
+     events = db((db.event.id == db.participation.event) & (db.participation.person == auth.user_id)).select(db.event.ALL, orderby=db.event.date_time, limitby = (0,4))
+     return dict(user=user,sportskill=sportskill, events=events)
      
 def edit_skills():
      user = db.auth_user(username=request.args(0))
@@ -215,29 +223,15 @@ def edit_skills():
      return dict(user=user,sportskill=sportskill,form=form)
      
 def delete_skills():
-     user = db.auth_user(username=request.args(0))
-     sportskill = db.sportskill(id=request.args(1))
+    user = db.auth_user(username=request.args(0))
+    sportskill = db.sportskill(id=request.args(1))
      
-     if user.username != auth.user.username:
-         redirect(URL('home'))
-     
-     sportskill = db.sportskill(request.args(1))
-     
-     form = FORM(TABLE(TR("Sure?",SELECT('Yes','No',_name="sure",requires=IS_IN_SET(['Yes','No']))),
-                    TR("",INPUT(_type="submit",_value="SUBMIT"))))
-                    
-     if form.accepts(request,session):
-         response.flash="form accepted"
-         if form.vars.sure=='Yes':
-             db(db.sportskill.id==request.args(1,cast=int)).delete()
-             redirect(URL('userinfo',args=user.username))
-         if form.vars.sure=='No':
-             redirect(URL('userinfo',args=user.username))
-     elif form.errors:
-         response.flash="form is invalid"
-     else:
-         response.flash="please fill the form"
-     return dict(user=user,sportskill=sportskill,form=form)
+    response.flash="form accepted"
+    db(db.sportskill.id==request.args(1,cast=int)).delete()
+    db.commit()
+    redirect(URL('userinfo',args=user.username))
+
+    return dict()
 
 def add_skill():
      user = db.auth_user(username=request.args(0))

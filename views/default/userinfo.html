@@ -1,35 +1,104 @@
 {{extend 'layout.html'}}
 
-<h3>Profile</h3><br>
-<img id="profile" src="{{=URL('download',args=user.profile_pic)}}" /><br>
-User Name: {{=user.username}}<br>
-Name: {{=user.first_name}} {{=user.last_name}}<br>
-Gender: {{=user.gender}}<br>
-Date Of Birth: {{=user.dob}}<br>
-Phone Number: {{=user.phone_number}}<br>
-<hr>
-{{for sportskill in sportskill:}}
-    <div class="event_border span3">
-        {{if sportskill.person == user.id:}}
-            Sport: {{=sportskill.sport.sport}}<br>
-            Level: {{=sportskill.level}}<br>
-            {{if sportskill.position:}}
-                Position: {{=sportskill.position}}<br>
-            {{pass}}    
-            {{if user.username == auth.user.username:}}
-                <a href="{{=URL('edit_skills',args=(user.username, sportskill.id))}}">Edit</a> <a href="{{=URL('delete_skills',args=(user.username, sportskill.id))}}">Delete</a><br>
-            {{pass}}
-        {{pass}}
-    </div>
-{{pass}}
+<div style="" class="span10 event_border" id="eventinfo">
 
-<hr>
-{{if user.username == auth.user.username:}}
-<a href="{{=URL('add_skill',args=(user.username))}}">Add New Sport</a><br>
-<a href="{{=URL('user/profile',vars=dict(_next=request.env.path_info))}}">Edit Profile</a><br>
-{{pass}}
-<a href="{{=URL('home')}}">Home</a>
-<a href="{{=URL('create')}}">Create Event</a>
+        <div class="span3 event-image"  >
+            <img src="{{=URL('download',args=user.profile_pic)}}" />
+            </div>
+
+            <div class="span6" id="basic-informations">
+                {{=H4(user.first_name,' ',user.first_name)}} 
+                {{=user.username}}
+                {{if user.username == auth.user.username:}}
+                    <div class="edit-profile-btn">
+                        <a href="{{=URL('user/profile',vars=dict(_next=request.env.path_info))}}"><button class="btn event-btn" type="button"><i class="icon-edit icon-white"></i> Edit Profile </button></a><br>
+                    </div>
+                {{pass}}
+                <hr>
+                <table class="info_table span4" >
+                <tr >
+                    <td>{{=H6('Age: ')}}</td>
+                    <td>{{=H6(user.dob)}}</td>
+                </tr>
+                <tr>
+                    <td>{{=H6('Gender: ')}}</td>
+                    <td>{{=H6(user.gender)}}</td>
+                </tr>
+                <tr>
+                    <td>{{=H6('Email: ')}}</td>
+                    <td>{{=H6(user.email)}}</td>
+                </tr>
+                <tr>
+                    <td>{{=H6('Phone: ')}}</td>
+                    <td>{{=H6(user.phone_number)}}</td>
+                </tr>
+                </table>
+
+            <div class="accordion span6 marginleft_none" id="accordion2">
+                <div class="accordion-group">
+                  <div class="accordion-heading">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+                      {{=H6('About ',user.first_name)}} 
+                    </a>
+                  </div>
+                  <div id="collapseOne" class="accordion-body collapse in">
+                    <div class="accordion-inner">
+                        {{=P(user.description)}}
+                    </div>
+                  </div>
+                </div>
+            </div>   
+        </div>
+
+        <div class="span3 user-schedule">
+            <h5>{{=user.first_name}}'s Schedule </h5> <hr>
+                {{for event in events:}}
+                    <div class="event-recommendation-info" style="background-color: #666;">
+                        <a href="{{=URL('event', args=event.id)}}">
+                            {{=H6(event.name)}}
+                        </a>
+                        {{=P(' ',event.sport.sport)}}
+                        {{=P(XML('<i class="icon-calendar icon-white"></i>'),'  ',event.date_time.date(),' at ', event.date_time.time())}}
+                        {{=P(XML('<i class="icon-map-marker icon-white"></i>'),'  ', event.location)}}
+                        {{=P(XML('<i class="icon-user icon-white"></i>'),' By ', A(event.host.first_name+ " " + event.host.last_name, _href=URL('userinfo', args=[event.host.username])),' ', prettydate(event.posting_date,T))}}
+                    </div>
+                {{pass}}
+        </div>
+
+        <div class="span6 sport-skills">
+            <h5> Sports Skill</h5> <hr>
+            {{for sportskill in sportskill:}}
+                <div class="individual-skill" style="background-color: #666;">
+                    <span class="label">{{=P(sportskill.sport.sport)}}</span>
+                    {{=H3(sportskill.level)}}
+                    {{if sportskill.position:}}
+                        {{=P('Position: ',sportskill.position)}}
+                    {{pass}} 
+                    {{if user.username == auth.user.username:}}
+                        <div class="sport-skill-btn">
+                            <a href="{{=URL('edit_skills',args=(user.username, sportskill.id))}}">Edit</a> 
+                            <a href="{{=URL('delete_skills',args=(user.username, sportskill.id))}}">Delete</a>
+                        </div>
+                    {{pass}}
+                </div>
+            {{pass}}
+
+            {{if user.username == auth.user.username:}}
+                <div class="individual-skill" style="background-color: #666;">
+                    <a href="{{=URL('add_skill',args=(user.username))}}"><i class="icon-plus icon-white"></i> Add Skill </a><br>
+                </div>
+            {{pass}}
+            
+
+            
+        </div>
+
+
+</div>
+
+
+
+
 
 <script>
 var max_size = 200;

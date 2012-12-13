@@ -1,6 +1,6 @@
 {{extend 'layout.html'}}
-<h1>Create An Event</h1>
-{{=form}}
+<h3 style="text-align:center">Create An Event</h3>
 <br>
-<a href="{{=URL('home')}}">Home</a>
-<a href="{{=URL('userinfo',vars=dict(_next=request.env.path_info))}}">Profile</a>
+<div id="web2py_user_form" style="padding-left: 60px;" >
+	{{=form}}
+</div>	
