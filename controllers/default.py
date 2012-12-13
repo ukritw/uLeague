@@ -242,6 +242,17 @@ def delete_skills():
 
     return dict()
 
+def delete_comments():
+    event = db.event(id=request.args(0))
+    coments = db.comments(id=request.args(1))
+     
+    response.flash="form accepted"
+    db(db.comments.id==request.args(1,cast=int)).delete()
+    db.commit()
+    redirect(URL('event',args=event.id))
+
+    return dict()
+
 def add_skill():
      user = db.auth_user(username=request.args(0))
      #sportskill = db().select(db.sportskill.ALL)
