@@ -110,13 +110,15 @@
       <div id="collapseThree" class="accordion-body collapse in">
         <div class="accordion-inner">
             {{for comments in comments:}}
-            	<div class="event-comment" style="background-color: #666;">
-                	{{=P(' ',comments.comment)}}
-                    {{=P('Posted on: ',comments.posting_date)}}
-                	<a href="{{=URL('userinfo',args=(comments.author.username))}}">
-                	{{=P(' By: ',comments.author.username)}}
-                    </a>
-                </div>
+                {{if event.id == comments.event:}}
+                    <div class="event-comment" style="background-color: #666;">
+                        {{=P(' ',comments.comment)}}
+                        {{=P('Posted on: ',comments.posting_date)}}
+                        <a href="{{=URL('userinfo',args=(comments.author.username))}}">
+                        {{=P(' By: ',comments.author.username)}}
+                        </a>
+                    </div>
+                {{pass}}
             {{pass}}
             <div class="event-comment" style="background-color: #666;">
                 {{=comment_form}}
